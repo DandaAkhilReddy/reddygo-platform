@@ -32,6 +32,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️  Firebase initialization failed: {e}")
 
+    # Initialize Firebase Realtime Database
+    try:
+        from realtime_db_client import initialize_realtime_db
+        initialize_realtime_db()
+        print("🔥 Firebase Realtime Database initialized")
+    except Exception as e:
+        print(f"⚠️  Realtime Database initialization failed: {e}")
+
     # Initialize AI Agents
     print("🤖 Initializing AI Agents...")
     print("  ✅ Coordinator Agent (challenge orchestration)")

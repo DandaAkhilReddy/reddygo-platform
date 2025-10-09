@@ -62,11 +62,16 @@ async def send_friend_request(request: FriendRequest):
     Send a friend request to another user.
 
     Validates:
+    - Not sending to yourself
     - Users exist
     - Not already friends
-    - No pending request exists
+    - No pending request exists (including reverse direction)
     """
     db = get_firestore_client()
+
+    # Prevent self-friend requests
+    if request.from_user_id == request.to_user_id:
+        raise HTTPException(status_code=400, detail="Cannot send friend request to yourself")
 
     # Validate users exist
     from_user_doc = db.collection('users').document(request.from_user_id).get()
@@ -87,7 +92,7 @@ async def send_friend_request(request: FriendRequest):
     if list(existing_friendship1) or list(existing_friendship2):
         raise HTTPException(status_code=400, detail="Already friends")
 
-    # Check for existing pending request
+    # Check for existing pending request (same direction)
     existing_request = db.collection('friend_requests').where(
         'from_user_id', '==', request.from_user_id
     ).where('to_user_id', '==', request.to_user_id).where(
@@ -96,6 +101,103 @@ async def send_friend_request(request: FriendRequest):
 
     if list(existing_request):
         raise HTTPException(status_code=400, detail="Friend request already sent")
+
+    # Check for reverse-direction pending request (auto-accept if exists)
+    reverse_request_query = db.collection('friend_requests').where(
+        'from_user_id', '==', request.to_user_id
+    ).where('to_user_id', '==', request.from_user_id).where(
+        'status', '==', 'pending'
+    ).limit(1).stream()
+
+    reverse_requests = list(reverse_request_query)
+    if reverse_requests:
+        # Auto-accept: create friendship and remove pending request
+        reverse_request_doc = reverse_requests[0]
+        reverse_request_id = reverse_request_doc.id
+
+        from_user_data = from_user_doc.to_dict()
+        to_user_data = to_user_doc.to_dict()
+
+        # Use batch to ensure atomicity
+        batch = db.batch()
+
+        # Create bidirectional friendship
+        friendship_ref = db.collection('friendships').document()
+        batch.set(friendship_ref, {
+            "user1_id": request.from_user_id,
+            "user2_id": request.to_user_id,
+            "created_at": firestore.SERVER_TIMESTAMP,
+            "status": "active"
+        })
+
+        # Add to each other's friend subcollections
+        batch.set(
+            db.collection('users').document(request.from_user_id).collection('friends').document(request.to_user_id),
+            {
+                "friend_id": request.to_user_id,
+                "name": to_user_data.get('name', 'Unknown'),
+                "photo_url": to_user_data.get('profile_photo_url'),
+                "added_at": firestore.SERVER_TIMESTAMP
+            }
+        )
+
+        batch.set(
+            db.collection('users').document(request.to_user_id).collection('friends').document(request.from_user_id),
+            {
+                "friend_id": request.from_user_id,
+                "name": from_user_data.get('name', 'Unknown'),
+                "photo_url": from_user_data.get('profile_photo_url'),
+                "added_at": firestore.SERVER_TIMESTAMP
+            }
+        )
+
+        # Update friend counts
+        batch.update(
+            db.collection('users').document(request.from_user_id),
+            {"social.friends_count": firestore.Increment(1)}
+        )
+        batch.update(
+            db.collection('users').document(request.to_user_id),
+            {"social.friends_count": firestore.Increment(1)}
+        )
+
+        # Mark reverse request as accepted
+        batch.update(
+            db.collection('friend_requests').document(reverse_request_id),
+            {
+                "status": "accepted",
+                "responded_at": firestore.SERVER_TIMESTAMP
+            }
+        )
+
+        # Commit all changes atomically
+        batch.commit()
+
+        # Send notifications
+        from realtime_db_client import send_realtime_notification
+        send_realtime_notification(request.to_user_id, {
+            "type": "friend_request_accepted",
+            "title": "Friend Request Auto-Accepted",
+            "body": f"{from_user_data.get('name')} accepted your friend request",
+            "data": {"friend_id": request.from_user_id}
+        })
+        send_realtime_notification(request.from_user_id, {
+            "type": "friendship_created",
+            "title": "You Are Now Friends",
+            "body": f"You and {to_user_data.get('name')} are now friends",
+            "data": {"friend_id": request.to_user_id}
+        })
+
+        # Return accepted friendship response
+        return FriendRequestResponse(
+            request_id=reverse_request_id,
+            from_user_id=request.to_user_id,
+            from_user_name=to_user_data.get('name', 'Unknown'),
+            from_user_photo=to_user_data.get('profile_photo_url'),
+            to_user_id=request.from_user_id,
+            status="accepted",
+            created_at=datetime.utcnow()
+        )
 
     # Create friend request
     from_user_data = from_user_doc.to_dict()
@@ -432,13 +534,21 @@ async def get_friend_leaderboard(user_id: str, timeframe: str = "weekly"):
 
         leaderboard = leaderboard_data
 
+    # Recompute ranks if missing from cached data
+    if leaderboard and any('rank' not in entry for entry in leaderboard):
+        # Sort by points descending
+        leaderboard.sort(key=lambda x: x.get('points', 0), reverse=True)
+        # Assign ranks
+        for rank, entry in enumerate(leaderboard, start=1):
+            entry['rank'] = rank
+
     return [
         FriendLeaderboardEntry(
             user_id=entry['user_id'],
             name=entry.get('name', 'Unknown'),
             photo_url=entry.get('photo_url'),
-            points=entry['points'],
-            rank=entry['rank'],
+            points=entry.get('points', 0),
+            rank=entry.get('rank', 0),
             challenges_this_week=entry.get('challenges_this_week', 0)
         )
         for entry in leaderboard

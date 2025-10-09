@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import routers
-from routers import challenges, users, validation, coaching, rewards, encryption
+from routers import challenges, users, validation, coaching, rewards, encryption, friends
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -104,6 +104,7 @@ app.include_router(validation.router, prefix="/api/validation", tags=["validatio
 app.include_router(coaching.router, prefix="/api/coaching", tags=["coaching"])
 app.include_router(rewards.router, prefix="/api/rewards", tags=["rewards"])
 app.include_router(encryption.router, prefix="/api/encryption", tags=["encryption"])
+app.include_router(friends.router, prefix="/api/friends", tags=["friends"])
 
 if __name__ == "__main__":
     import uvicorn

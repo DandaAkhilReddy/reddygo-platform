@@ -2,15 +2,18 @@
 ReddyGo Friends Router
 
 Social features for friend connections, friend requests, and friend leaderboards.
+
+All endpoints require Firebase authentication via Bearer token in Authorization header.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from firebase_client import get_firestore_client
 from firebase_admin import firestore
 from realtime_db_client import get_leaderboard, update_leaderboard
+from auth import get_current_user
 
 router = APIRouter()
 
@@ -18,8 +21,7 @@ router = APIRouter()
 # Request/Response Models
 class FriendRequest(BaseModel):
     """Request to send a friend request."""
-    from_user_id: str
-    to_user_id: str
+    to_user_id: str  # from_user_id is extracted from authenticated token
 
 
 class FriendRequestResponse(BaseModel):
@@ -57,9 +59,14 @@ class FriendLeaderboardEntry(BaseModel):
 # ============================================================================
 
 @router.post("/request", response_model=FriendRequestResponse)
-async def send_friend_request(request: FriendRequest):
+async def send_friend_request(
+    request: FriendRequest,
+    current_user: str = Depends(get_current_user)
+):
     """
     Send a friend request to another user.
+
+    Requires Firebase authentication via Bearer token.
 
     Validates:
     - Not sending to yourself
@@ -70,11 +77,11 @@ async def send_friend_request(request: FriendRequest):
     db = get_firestore_client()
 
     # Prevent self-friend requests
-    if request.from_user_id == request.to_user_id:
+    if current_user == request.to_user_id:
         raise HTTPException(status_code=400, detail="Cannot send friend request to yourself")
 
     # Validate users exist
-    from_user_doc = db.collection('users').document(request.from_user_id).get()
+    from_user_doc = db.collection('users').document(current_user).get()
     to_user_doc = db.collection('users').document(request.to_user_id).get()
 
     if not from_user_doc.exists or not to_user_doc.exists:
@@ -82,19 +89,19 @@ async def send_friend_request(request: FriendRequest):
 
     # Check if already friends (check both directions)
     existing_friendship1 = db.collection('friendships').where(
-        'user1_id', '==', request.from_user_id
+        'user1_id', '==', current_user
     ).where('user2_id', '==', request.to_user_id).limit(1).stream()
 
     existing_friendship2 = db.collection('friendships').where(
         'user1_id', '==', request.to_user_id
-    ).where('user2_id', '==', request.from_user_id).limit(1).stream()
+    ).where('user2_id', '==', current_user).limit(1).stream()
 
     if list(existing_friendship1) or list(existing_friendship2):
         raise HTTPException(status_code=400, detail="Already friends")
 
     # Check for existing pending request (same direction)
     existing_request = db.collection('friend_requests').where(
-        'from_user_id', '==', request.from_user_id
+        'from_user_id', '==', current_user
     ).where('to_user_id', '==', request.to_user_id).where(
         'status', '==', 'pending'
     ).limit(1).stream()
@@ -105,7 +112,7 @@ async def send_friend_request(request: FriendRequest):
     # Check for reverse-direction pending request (auto-accept if exists)
     reverse_request_query = db.collection('friend_requests').where(
         'from_user_id', '==', request.to_user_id
-    ).where('to_user_id', '==', request.from_user_id).where(
+    ).where('to_user_id', '==', current_user).where(
         'status', '==', 'pending'
     ).limit(1).stream()
 
@@ -114,6 +121,12 @@ async def send_friend_request(request: FriendRequest):
         # Auto-accept: create friendship and remove pending request
         reverse_request_doc = reverse_requests[0]
         reverse_request_id = reverse_request_doc.id
+
+        # Validate user documents exist before calling .to_dict() (Issue #5)
+        if not from_user_doc.exists:
+            raise HTTPException(status_code=404, detail="Authenticated user not found")
+        if not to_user_doc.exists:
+            raise HTTPException(status_code=404, detail="Target user not found")
 
         from_user_data = from_user_doc.to_dict()
         to_user_data = to_user_doc.to_dict()
@@ -124,7 +137,7 @@ async def send_friend_request(request: FriendRequest):
         # Create bidirectional friendship
         friendship_ref = db.collection('friendships').document()
         batch.set(friendship_ref, {
-            "user1_id": request.from_user_id,
+            "user1_id": current_user,
             "user2_id": request.to_user_id,
             "created_at": firestore.SERVER_TIMESTAMP,
             "status": "active"
@@ -132,7 +145,7 @@ async def send_friend_request(request: FriendRequest):
 
         # Add to each other's friend subcollections
         batch.set(
-            db.collection('users').document(request.from_user_id).collection('friends').document(request.to_user_id),
+            db.collection('users').document(current_user).collection('friends').document(request.to_user_id),
             {
                 "friend_id": request.to_user_id,
                 "name": to_user_data.get('name', 'Unknown'),
@@ -142,9 +155,9 @@ async def send_friend_request(request: FriendRequest):
         )
 
         batch.set(
-            db.collection('users').document(request.to_user_id).collection('friends').document(request.from_user_id),
+            db.collection('users').document(request.to_user_id).collection('friends').document(current_user),
             {
-                "friend_id": request.from_user_id,
+                "friend_id": current_user,
                 "name": from_user_data.get('name', 'Unknown'),
                 "photo_url": from_user_data.get('profile_photo_url'),
                 "added_at": firestore.SERVER_TIMESTAMP
@@ -153,7 +166,7 @@ async def send_friend_request(request: FriendRequest):
 
         # Update friend counts
         batch.update(
-            db.collection('users').document(request.from_user_id),
+            db.collection('users').document(current_user),
             {"social.friends_count": firestore.Increment(1)}
         )
         batch.update(
@@ -179,9 +192,9 @@ async def send_friend_request(request: FriendRequest):
             "type": "friend_request_accepted",
             "title": "Friend Request Auto-Accepted",
             "body": f"{from_user_data.get('name')} accepted your friend request",
-            "data": {"friend_id": request.from_user_id}
+            "data": {"friend_id": current_user}
         })
-        send_realtime_notification(request.from_user_id, {
+        send_realtime_notification(current_user, {
             "type": "friendship_created",
             "title": "You Are Now Friends",
             "body": f"You and {to_user_data.get('name')} are now friends",
@@ -194,7 +207,7 @@ async def send_friend_request(request: FriendRequest):
             from_user_id=request.to_user_id,
             from_user_name=to_user_data.get('name', 'Unknown'),
             from_user_photo=to_user_data.get('profile_photo_url'),
-            to_user_id=request.from_user_id,
+            to_user_id=current_user,
             status="accepted",
             created_at=datetime.utcnow()
         )
@@ -204,7 +217,7 @@ async def send_friend_request(request: FriendRequest):
 
     friend_request_ref = db.collection('friend_requests').document()
     friend_request_data = {
-        "from_user_id": request.from_user_id,
+        "from_user_id": current_user,
         "from_user_name": from_user_data.get('name', 'Unknown'),
         "from_user_photo": from_user_data.get('profile_photo_url'),
         "to_user_id": request.to_user_id,
@@ -225,7 +238,7 @@ async def send_friend_request(request: FriendRequest):
 
     return FriendRequestResponse(
         request_id=friend_request_ref.id,
-        from_user_id=request.from_user_id,
+        from_user_id=current_user,
         from_user_name=from_user_data.get('name', 'Unknown'),
         from_user_photo=from_user_data.get('profile_photo_url'),
         to_user_id=request.to_user_id,
@@ -235,10 +248,14 @@ async def send_friend_request(request: FriendRequest):
 
 
 @router.post("/accept/{request_id}", response_model=Friend)
-async def accept_friend_request(request_id: str, user_id: str):
+async def accept_friend_request(
+    request_id: str,
+    current_user: str = Depends(get_current_user)
+):
     """
     Accept a friend request.
 
+    Requires Firebase authentication via Bearer token.
     Creates bidirectional friendship and updates both users' friend subcollections.
     """
     db = get_firestore_client()
@@ -252,7 +269,7 @@ async def accept_friend_request(request_id: str, user_id: str):
     request_data = request_doc.to_dict()
 
     # Verify user is recipient
-    if request_data['to_user_id'] != user_id:
+    if request_data['to_user_id'] != current_user:
         raise HTTPException(status_code=403, detail="Not authorized to accept this request")
 
     # Check if already accepted
@@ -263,7 +280,7 @@ async def accept_friend_request(request_id: str, user_id: str):
     friendship_ref = db.collection('friendships').document()
     friendship_data = {
         "user1_id": request_data['from_user_id'],
-        "user2_id": user_id,
+        "user2_id": current_user,
         "created_at": firestore.SERVER_TIMESTAMP,
         "status": "active"
     }
@@ -271,21 +288,21 @@ async def accept_friend_request(request_id: str, user_id: str):
 
     # Get both users' data
     from_user_doc = db.collection('users').document(request_data['from_user_id']).get()
-    to_user_doc = db.collection('users').document(user_id).get()
+    to_user_doc = db.collection('users').document(current_user).get()
 
     from_user_data = from_user_doc.to_dict()
     to_user_data = to_user_doc.to_dict()
 
     # Add to each other's friend subcollections
-    db.collection('users').document(user_id).collection('friends').document(request_data['from_user_id']).set({
+    db.collection('users').document(current_user).collection('friends').document(request_data['from_user_id']).set({
         "friend_id": request_data['from_user_id'],
         "name": from_user_data.get('name', 'Unknown'),
         "photo_url": from_user_data.get('profile_photo_url'),
         "added_at": firestore.SERVER_TIMESTAMP
     })
 
-    db.collection('users').document(request_data['from_user_id']).collection('friends').document(user_id).set({
-        "friend_id": user_id,
+    db.collection('users').document(request_data['from_user_id']).collection('friends').document(current_user).set({
+        "friend_id": current_user,
         "name": to_user_data.get('name', 'Unknown'),
         "photo_url": to_user_data.get('profile_photo_url'),
         "added_at": firestore.SERVER_TIMESTAMP
@@ -298,7 +315,7 @@ async def accept_friend_request(request_id: str, user_id: str):
     })
 
     # Update friend counts
-    db.collection('users').document(user_id).update({
+    db.collection('users').document(current_user).update({
         "social.friends_count": firestore.Increment(1)
     })
     db.collection('users').document(request_data['from_user_id']).update({
@@ -311,7 +328,7 @@ async def accept_friend_request(request_id: str, user_id: str):
         "type": "friend_request_accepted",
         "title": "Friend Request Accepted",
         "body": f"{to_user_data.get('name')} accepted your friend request",
-        "data": {"friend_id": user_id}
+        "data": {"friend_id": current_user}
     })
 
     return Friend(
@@ -324,8 +341,15 @@ async def accept_friend_request(request_id: str, user_id: str):
 
 
 @router.post("/reject/{request_id}", status_code=204)
-async def reject_friend_request(request_id: str, user_id: str):
-    """Reject a friend request."""
+async def reject_friend_request(
+    request_id: str,
+    current_user: str = Depends(get_current_user)
+):
+    """
+    Reject a friend request.
+
+    Requires Firebase authentication via Bearer token.
+    """
     db = get_firestore_client()
 
     # Get friend request
@@ -337,7 +361,7 @@ async def reject_friend_request(request_id: str, user_id: str):
     request_data = request_doc.to_dict()
 
     # Verify user is recipient
-    if request_data['to_user_id'] != user_id:
+    if request_data['to_user_id'] != current_user:
         raise HTTPException(status_code=403, detail="Not authorized to reject this request")
 
     # Update status
@@ -349,20 +373,24 @@ async def reject_friend_request(request_id: str, user_id: str):
     return None
 
 
-@router.get("/requests/{user_id}", response_model=List[FriendRequestResponse])
-async def get_friend_requests(user_id: str, status: str = "pending"):
+@router.get("/requests", response_model=List[FriendRequestResponse])
+async def get_friend_requests(
+    current_user: str = Depends(get_current_user),
+    status: str = "pending"
+):
     """
-    Get friend requests for a user.
+    Get friend requests for the authenticated user.
+
+    Requires Firebase authentication via Bearer token.
 
     Args:
-        user_id: User ID
         status: pending | accepted | rejected (default: pending)
     """
     db = get_firestore_client()
 
     # Get incoming requests
     requests_ref = db.collection('friend_requests').where(
-        'to_user_id', '==', user_id
+        'to_user_id', '==', current_user
     ).where('status', '==', status).order_by('created_at', direction=firestore.Query.DESCENDING)
 
     requests = requests_ref.stream()
@@ -375,7 +403,7 @@ async def get_friend_requests(user_id: str, status: str = "pending"):
             from_user_id=request_data['from_user_id'],
             from_user_name=request_data.get('from_user_name', 'Unknown'),
             from_user_photo=request_data.get('from_user_photo'),
-            to_user_id=user_id,
+            to_user_id=current_user,
             status=request_data['status'],
             created_at=request_data.get('created_at', datetime.utcnow())
         ))
@@ -387,13 +415,17 @@ async def get_friend_requests(user_id: str, status: str = "pending"):
 # Friends List
 # ============================================================================
 
-@router.get("/{user_id}", response_model=List[Friend])
-async def get_friends(user_id: str):
-    """Get user's friends list."""
+@router.get("/", response_model=List[Friend])
+async def get_friends(current_user: str = Depends(get_current_user)):
+    """
+    Get authenticated user's friends list.
+
+    Requires Firebase authentication via Bearer token.
+    """
     db = get_firestore_client()
 
     # Get friends from subcollection
-    friends_ref = db.collection('users').document(user_id).collection('friends')
+    friends_ref = db.collection('users').document(current_user).collection('friends')
     friends = friends_ref.stream()
 
     result = []
@@ -418,22 +450,26 @@ async def get_friends(user_id: str):
 
 
 @router.delete("/remove/{friend_id}", status_code=204)
-async def remove_friend(user_id: str, friend_id: str):
+async def remove_friend(
+    friend_id: str,
+    current_user: str = Depends(get_current_user)
+):
     """
     Remove a friend.
 
+    Requires Firebase authentication via Bearer token.
     Deletes bidirectional friendship and updates both users' friend subcollections.
     """
     db = get_firestore_client()
 
     # Find and delete friendship (check both directions)
     friendship_query1 = db.collection('friendships').where(
-        'user1_id', '==', user_id
+        'user1_id', '==', current_user
     ).where('user2_id', '==', friend_id).limit(1)
 
     friendship_query2 = db.collection('friendships').where(
         'user1_id', '==', friend_id
-    ).where('user2_id', '==', user_id).limit(1)
+    ).where('user2_id', '==', current_user).limit(1)
 
     friendship_docs = list(friendship_query1.stream()) + list(friendship_query2.stream())
 
@@ -445,11 +481,11 @@ async def remove_friend(user_id: str, friend_id: str):
         friendship_doc.reference.delete()
 
     # Remove from both users' friend subcollections
-    db.collection('users').document(user_id).collection('friends').document(friend_id).delete()
-    db.collection('users').document(friend_id).collection('friends').document(user_id).delete()
+    db.collection('users').document(current_user).collection('friends').document(friend_id).delete()
+    db.collection('users').document(friend_id).collection('friends').document(current_user).delete()
 
     # Update friend counts
-    db.collection('users').document(user_id).update({
+    db.collection('users').document(current_user).update({
         "social.friends_count": firestore.Increment(-1)
     })
     db.collection('users').document(friend_id).update({
@@ -463,13 +499,17 @@ async def remove_friend(user_id: str, friend_id: str):
 # Friend Leaderboard
 # ============================================================================
 
-@router.get("/leaderboard/{user_id}", response_model=List[FriendLeaderboardEntry])
-async def get_friend_leaderboard(user_id: str, timeframe: str = "weekly"):
+@router.get("/leaderboard", response_model=List[FriendLeaderboardEntry])
+async def get_friend_leaderboard(
+    current_user: str = Depends(get_current_user),
+    timeframe: str = "weekly"
+):
     """
-    Get friend leaderboard.
+    Get friend leaderboard for the authenticated user.
+
+    Requires Firebase authentication via Bearer token.
 
     Args:
-        user_id: User ID
         timeframe: weekly | monthly | all_time
 
     Returns:
@@ -481,7 +521,7 @@ async def get_friend_leaderboard(user_id: str, timeframe: str = "weekly"):
     # Get leaderboard from Realtime Database
     leaderboard = get_leaderboard(
         leaderboard_type="friends",
-        leaderboard_id=user_id,
+        leaderboard_id=current_user,
         timeframe=timeframe,
         limit=100
     )
@@ -491,7 +531,7 @@ async def get_friend_leaderboard(user_id: str, timeframe: str = "weekly"):
         db = get_firestore_client()
 
         # Get user's friends
-        friends_ref = db.collection('users').document(user_id).collection('friends')
+        friends_ref = db.collection('users').document(current_user).collection('friends')
         friends = friends_ref.stream()
 
         leaderboard_data = []
@@ -524,7 +564,7 @@ async def get_friend_leaderboard(user_id: str, timeframe: str = "weekly"):
         for entry in leaderboard_data:
             update_leaderboard(
                 leaderboard_type="friends",
-                leaderboard_id=user_id,
+                leaderboard_id=current_user,
                 timeframe=timeframe,
                 user_id=entry['user_id'],
                 points=entry['points'],

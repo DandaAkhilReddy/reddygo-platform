@@ -5,10 +5,8 @@ python-dotenv==1.0.0
 pydantic==2.5.3
 pydantic-settings==2.1.0
 
-# Database
-asyncpg==0.29.0
-supabase==2.3.0
-psycopg2-binary==2.9.9
+# Database - Firebase
+firebase-admin==6.4.0
 
 # OpenAI and AI
 openai==1.10.0
@@ -17,8 +15,7 @@ httpx==0.26.0
 # Temporal workflow
 temporalio==1.5.1
 
-# Geospatial
-geoalchemy2==0.14.3
+# Geospatial  (Haversine distance calculation)
 numpy==1.26.3
 
 # Memory and caching

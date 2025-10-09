@@ -24,6 +24,14 @@ async def lifespan(app: FastAPI):
     print("🚀 ReddyGo API starting up...")
     print(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
 
+    # Initialize Firebase
+    try:
+        from firebase_client import initialize_firebase
+        initialize_firebase()
+        print("🔥 Firebase Firestore initialized")
+    except Exception as e:
+        print(f"⚠️  Firebase initialization failed: {e}")
+
     # Initialize AI Agents
     print("🤖 Initializing AI Agents...")
     print("  ✅ Coordinator Agent (challenge orchestration)")

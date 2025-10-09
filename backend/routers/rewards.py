@@ -9,7 +9,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 from agents.reward import RewardAgent, USAGE_TIERS, STREAK_BONUSES
-from database import get_supabase_client
+from firebase_client import get_firestore_client
+from firebase_admin import firestore
 
 router = APIRouter()
 
@@ -62,15 +63,16 @@ async def get_reward_status(user_id: str):
     - Available perks
     - Progress to next tier
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get reward data
-    result = supabase.table("users").select("stats").eq("id", user_id).execute()
+    user_doc = db.collection('users').document(user_id).get()
 
-    if not result.data:
+    if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
 
-    stats = result.data[0].get("stats", {})
+    user_data = user_doc.to_dict()
+    stats = user_data.get("stats", {})
 
     # Get tier info
     weekly_challenges = stats.get("challenges_this_week", 0)
@@ -126,24 +128,24 @@ async def get_leaderboard(limit: int = 100, tier: Optional[str] = None):
     Returns:
         Ranked list of top users
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get users with stats
-    query = supabase.table("users").select("id, name, stats")
+    users_ref = db.collection('users').limit(limit)
+    users = users_ref.stream()
 
-    if tier:
-        # TODO: Add tier filtering
-        pass
+    user_list = []
+    for user_doc in users:
+        user_data = user_doc.to_dict()
+        user_data['id'] = user_doc.id
+        user_list.append(user_data)
 
-    result = query.limit(limit).execute()
-
-    if not result.data:
+    if not user_list:
         return []
 
     # Sort by points
-    users = result.data
     sorted_users = sorted(
-        users,
+        user_list,
         key=lambda u: u.get("stats", {}).get("points_balance", 0),
         reverse=True
     )
@@ -179,15 +181,16 @@ async def redeem_points(user_id: str, perk_id: str, points_cost: int):
     Returns:
         Success status and updated balance
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get current points
-    result = supabase.table("users").select("stats").eq("id", user_id).execute()
+    user_doc = db.collection('users').document(user_id).get()
 
-    if not result.data:
+    if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
 
-    stats = result.data[0].get("stats", {})
+    user_data = user_doc.to_dict()
+    stats = user_data.get("stats", {})
     current_points = stats.get("points_balance", 0)
 
     # Check if enough points
@@ -202,7 +205,7 @@ async def redeem_points(user_id: str, perk_id: str, points_cost: int):
     stats["points_balance"] = new_balance
 
     # Update database
-    supabase.table("users").update({"stats": stats}).eq("id", user_id).execute()
+    db.collection('users').document(user_id).update({"stats": stats})
 
     return {
         "success": True,
@@ -219,15 +222,16 @@ async def claim_streak_bonus(user_id: str):
 
     Checks current streak and awards bonus points if milestone reached.
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get stats
-    result = supabase.table("users").select("stats").eq("id", user_id).execute()
+    user_doc = db.collection('users').document(user_id).get()
 
-    if not result.data:
+    if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
 
-    stats = result.data[0].get("stats", {})
+    user_data = user_doc.to_dict()
+    stats = user_data.get("stats", {})
     current_streak = stats.get("current_streak", 0)
 
     # Check for streak milestone
@@ -256,7 +260,7 @@ async def claim_streak_bonus(user_id: str):
     })
 
     # Update database
-    supabase.table("users").update({"stats": stats}).eq("id", user_id).execute()
+    db.collection('users').document(user_id).update({"stats": stats})
 
     return {
         "bonus_claimed": True,

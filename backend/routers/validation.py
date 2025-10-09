@@ -14,7 +14,8 @@ from models import (
     ValidationResult,
     GPSPoint
 )
-from database import get_supabase_client
+from firebase_client import get_firestore_client
+from firebase_admin import firestore
 
 router = APIRouter()
 
@@ -82,15 +83,17 @@ async def validate_gps_track(submission: GPSTrackSubmission):
     # Determine validity
     is_valid = confidence_score >= 0.6 and len(flags) < 3
 
-    # Store validation result
-    supabase = get_supabase_client()
-    supabase.table("gps_tracks").insert({
+    # Store validation result in Firestore
+    db = get_firestore_client()
+    gps_track_ref = db.collection('gps_tracks').document()
+    gps_track_ref.set({
         "user_id": "temp_user",  # TODO: Get from auth
         "challenge_id": submission.challenge_id,
         "track_data": [p.dict() for p in track_points],
         "sensor_data": submission.sensor_data.dict() if submission.sensor_data else None,
-        "validation_score": confidence_score
-    }).execute()
+        "validation_score": confidence_score,
+        "created_at": firestore.SERVER_TIMESTAMP
+    })
 
     return ValidationResult(
         is_valid=is_valid,

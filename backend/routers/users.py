@@ -15,58 +15,72 @@ from models import (
     NearbyUser,
     NearbySearchRequest
 )
-from database import get_supabase_client
+from firebase_client import (
+    get_firestore_client,
+    create_user,
+    get_user,
+    update_user,
+    find_nearby_users
+)
+from firebase_admin import firestore
 
 router = APIRouter()
 
 @router.post("/register", response_model=UserProfile)
 async def register_user(user: UserCreate):
     """Register a new user."""
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Check if email exists
-    existing = supabase.table("users").select("id").eq("email", user.email).execute()
+    existing = db.collection('users').where('email', '==', user.email).limit(1).stream()
 
-    if existing.data:
+    if list(existing):
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    # Create user
-    result = supabase.table("users").insert({
-        "email": user.email,
-        "name": user.name
-    }).execute()
+    # Create user with auto-generated ID
+    user_ref = db.collection('users').document()
+    uid = user_ref.id
 
-    if not result.data:
-        raise HTTPException(status_code=500, detail="Failed to create user")
+    user_data = {
+        'email': user.email,
+        'name': user.name,
+        'created_at': firestore.SERVER_TIMESTAMP,
+        'location': None,
+        'stats': {
+            'challenges_completed': 0,
+            'total_distance_km': 0,
+            'total_calories': 0,
+            'challenges_this_week': 0,
+            'points_balance': 0,
+            'current_streak': 0
+        },
+        'preferences': {}
+    }
 
-    user_data = result.data[0]
+    user_ref.set(user_data)
 
     return UserProfile(
-        id=user_data["id"],
-        email=user_data["email"],
-        name=user_data["name"],
-        created_at=datetime.fromisoformat(user_data["created_at"]),
-        stats=user_data.get("stats", {}),
-        preferences=user_data.get("preferences", {})
+        id=uid,
+        email=user.email,
+        name=user.name,
+        created_at=datetime.utcnow(),
+        stats=user_data['stats'],
+        preferences=user_data['preferences']
     )
 
 @router.get("/{user_id}", response_model=UserProfile)
-async def get_user(user_id: str):
+async def get_user_profile(user_id: str):
     """Get user profile by ID."""
-    supabase = get_supabase_client()
+    user_data = get_user(user_id)
 
-    result = supabase.table("users").select("*").eq("id", user_id).execute()
-
-    if not result.data:
+    if not user_data:
         raise HTTPException(status_code=404, detail="User not found")
-
-    user_data = result.data[0]
 
     return UserProfile(
         id=user_data["id"],
         email=user_data["email"],
         name=user_data["name"],
-        created_at=datetime.fromisoformat(user_data["created_at"]),
+        created_at=user_data.get("created_at") or datetime.utcnow(),
         stats=user_data.get("stats", {}),
         preferences=user_data.get("preferences", {})
     )
@@ -81,20 +95,22 @@ async def update_location(user_id: str, location_update: UserLocationUpdate):
     - Safety features (know where users are during challenges)
     - Location-based recommendations
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
-    # Update last_location using PostGIS POINT
-    result = supabase.table("users").update({
-        "last_location": f"POINT({location_update.location.lon} {location_update.location.lat})"
-    }).eq("id", user_id).execute()
+    # Update location using Firebase GeoPoint
+    user_ref = db.collection('users').document(user_id)
 
-    if not result.data:
-        raise HTTPException(status_code=404, detail="User not found")
+    user_ref.update({
+        'location': firestore.GeoPoint(
+            location_update.location.lat,
+            location_update.location.lon
+        )
+    })
 
     return None
 
 @router.post("/nearby", response_model=List[NearbyUser])
-async def find_nearby_users(search: NearbySearchRequest):
+async def find_nearby_users_endpoint(search: NearbySearchRequest):
     """
     Find users within radius of location.
 
@@ -103,20 +119,12 @@ async def find_nearby_users(search: NearbySearchRequest):
     - Social discovery
     - Workout buddy matching
     """
-    supabase = get_supabase_client()
-
-    # Call PostGIS function
-    result = supabase.rpc(
-        "find_nearby_users",
-        {
-            "user_lat": search.location.lat,
-            "user_lon": search.location.lon,
-            "radius_meters": search.radius_meters
-        }
-    ).execute()
-
-    if not result.data:
-        return []
+    # Use Firebase Haversine-based nearby search
+    nearby = find_nearby_users(
+        lat=search.location.lat,
+        lon=search.location.lon,
+        radius_meters=search.radius_meters
+    )
 
     return [
         NearbyUser(
@@ -124,27 +132,41 @@ async def find_nearby_users(search: NearbySearchRequest):
             name=row["name"],
             distance_meters=row["distance_meters"]
         )
-        for row in result.data
+        for row in nearby
     ]
 
 @router.get("/{user_id}/stats")
-async def get_user_stats(user_id: str):
+async def get_user_stats_endpoint(user_id: str):
     """Get user fitness statistics."""
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get user stats
-    user_result = supabase.table("users").select("stats").eq("id", user_id).execute()
+    user_doc = db.collection('users').document(user_id).get()
 
-    if not user_result.data:
+    if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Get challenge history
-    challenges = supabase.table("challenge_participants").select("status, stats").eq("user_id", user_id).execute()
+    user_data = user_doc.to_dict()
+    stats = user_data.get("stats", {})
 
-    completed_challenges = [c for c in challenges.data if c["status"] == "completed"] if challenges.data else []
+    # Get challenge history from subcollections
+    challenges_ref = db.collection_group('participants').where('user_id', '==', user_id)
+    challenges = challenges_ref.stream()
+
+    challenge_list = []
+    completed_count = 0
+
+    for challenge_doc in challenges:
+        challenge_data = challenge_doc.to_dict()
+        challenge_list.append({
+            'status': challenge_data.get('status'),
+            'stats': challenge_data.get('stats', {})
+        })
+        if challenge_data.get('status') == 'completed':
+            completed_count += 1
 
     return {
-        "overall_stats": user_result.data[0]["stats"],
-        "challenges_completed": len(completed_challenges),
-        "recent_challenges": challenges.data[:10] if challenges.data else []
+        "overall_stats": stats,
+        "challenges_completed": completed_count,
+        "recent_challenges": challenge_list[:10]
     }

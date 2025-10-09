@@ -2,7 +2,7 @@
 Shared Tools for ReddyGo Agents
 
 Common functions that agents can call to interact with:
-- Database (Supabase)
+- Database (Firebase Firestore)
 - External APIs (weather, geolocation)
 - Search (SearXNG)
 - Memory (Supermemory/Mem0)
@@ -11,7 +11,13 @@ Common functions that agents can call to interact with:
 import os
 import httpx
 from typing import Dict, List, Any, Optional
-from database import get_supabase_client
+from firebase_client import (
+    get_firestore_client,
+    find_nearby_users as firebase_find_nearby_users,
+    get_user_stats as firebase_get_user_stats,
+    update_user_stats as firebase_update_user_stats
+)
+from firebase_admin import firestore
 import json
 
 # ============================================================================
@@ -20,7 +26,7 @@ import json
 
 def query_nearby_users(lat: float, lon: float, radius_meters: int = 200) -> List[Dict[str, Any]]:
     """
-    Find users within radius of a location using PostGIS.
+    Find users within radius of a location using Firebase Firestore.
 
     Args:
         lat: Latitude
@@ -30,21 +36,7 @@ def query_nearby_users(lat: float, lon: float, radius_meters: int = 200) -> List
     Returns:
         List of nearby users with distance
     """
-    supabase = get_supabase_client()
-
-    result = supabase.rpc(
-        "find_nearby_users",
-        {
-            "user_lat": lat,
-            "user_lon": lon,
-            "radius_meters": radius_meters
-        }
-    ).execute()
-
-    if not result.data:
-        return []
-
-    return result.data
+    return firebase_find_nearby_users(lat, lon, radius_meters)
 
 
 def create_challenge_instance(
@@ -56,7 +48,7 @@ def create_challenge_instance(
     rules: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
-    Create a new challenge in the database.
+    Create a new challenge in Firebase Firestore.
 
     Args:
         creator_id: User ID of challenge creator
@@ -71,30 +63,36 @@ def create_challenge_instance(
     """
     from datetime import datetime, timedelta
 
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     start_time = datetime.utcnow()
     end_time = start_time + timedelta(minutes=30)  # Default 30 min
 
-    result = supabase.table("challenges").insert({
+    challenge_data = {
         "creator_id": creator_id,
         "title": title,
         "challenge_type": challenge_type,
-        "zone_center": f"POINT({zone_center['lon']} {zone_center['lat']})",
+        "zone_center": firestore.GeoPoint(zone_center['lat'], zone_center['lon']),
         "zone_radius_meters": zone_radius_meters,
-        "start_time": start_time.isoformat(),
-        "end_time": end_time.isoformat(),
+        "start_time": start_time,
+        "end_time": end_time,
         "max_participants": 10,
         "rules": rules,
-        "status": "active"
-    }).execute()
+        "status": "active",
+        "created_at": firestore.SERVER_TIMESTAMP
+    }
 
-    return result.data[0] if result.data else None
+    # Add to Firestore
+    doc_ref = db.collection('challenges').add(challenge_data)
+    challenge_id = doc_ref[1].id
+
+    challenge_data['id'] = challenge_id
+    return challenge_data
 
 
 def get_user_stats(user_id: str) -> Dict[str, Any]:
     """
-    Get user fitness statistics.
+    Get user fitness statistics from Firebase Firestore.
 
     Args:
         user_id: User ID
@@ -102,19 +100,12 @@ def get_user_stats(user_id: str) -> Dict[str, Any]:
     Returns:
         User stats dictionary
     """
-    supabase = get_supabase_client()
-
-    result = supabase.table("users").select("stats").eq("id", user_id).execute()
-
-    if not result.data:
-        return {}
-
-    return result.data[0].get("stats", {})
+    return firebase_get_user_stats(user_id)
 
 
 def update_user_stats(user_id: str, stats_update: Dict[str, Any]) -> bool:
     """
-    Update user fitness statistics.
+    Update user fitness statistics in Firebase Firestore.
 
     Args:
         user_id: User ID
@@ -123,11 +114,7 @@ def update_user_stats(user_id: str, stats_update: Dict[str, Any]) -> bool:
     Returns:
         Success boolean
     """
-    supabase = get_supabase_client()
-
-    result = supabase.table("users").update({"stats": stats_update}).eq("id", user_id).execute()
-
-    return bool(result.data)
+    return firebase_update_user_stats(user_id, stats_update)
 
 
 # ============================================================================
@@ -249,15 +236,15 @@ async def get_user_memory(user_id: str, query: Optional[str] = None) -> List[str
         List of relevant memories
     """
     # TODO: Integrate with actual Supermemory API
-    # For now, use Supabase preferences as simple memory
+    # For now, use Firebase preferences as simple memory
 
-    supabase = get_supabase_client()
-    result = supabase.table("users").select("preferences, stats").eq("id", user_id).execute()
+    db = get_firestore_client()
+    user_doc = db.collection('users').document(user_id).get()
 
-    if not result.data:
+    if not user_doc.exists:
         return []
 
-    user_data = result.data[0]
+    user_data = user_doc.to_dict()
     preferences = user_data.get("preferences", {})
     stats = user_data.get("stats", {})
 
@@ -293,15 +280,17 @@ async def update_user_memory(user_id: str, memory: str) -> bool:
     # TODO: Integrate with actual Supermemory API
     # For now, append to preferences
 
-    supabase = get_supabase_client()
+    db = get_firestore_client()
+    user_ref = db.collection('users').document(user_id)
 
     # Get current preferences
-    result = supabase.table("users").select("preferences").eq("id", user_id).execute()
+    user_doc = user_ref.get()
 
-    if not result.data:
+    if not user_doc.exists:
         return False
 
-    preferences = result.data[0].get("preferences", {})
+    user_data = user_doc.to_dict()
+    preferences = user_data.get("preferences", {})
 
     # Add to memories array
     if "memories" not in preferences:
@@ -309,16 +298,16 @@ async def update_user_memory(user_id: str, memory: str) -> bool:
 
     preferences["memories"].append({
         "text": memory,
-        "timestamp": "utcnow()"  # Would be actual datetime
+        "timestamp": firestore.SERVER_TIMESTAMP
     })
 
     # Keep only last 50 memories
     preferences["memories"] = preferences["memories"][-50:]
 
     # Update
-    update_result = supabase.table("users").update({"preferences": preferences}).eq("id", user_id).execute()
+    user_ref.update({"preferences": preferences})
 
-    return bool(update_result.data)
+    return True
 
 
 # ============================================================================

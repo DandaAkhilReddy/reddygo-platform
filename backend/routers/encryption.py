@@ -10,7 +10,8 @@ from pydantic import BaseModel
 from typing import Dict, Any, Optional
 from encryption.e2ee import E2EEManager
 from encryption.key_management import KeyManager
-from database import get_supabase_client
+from firebase_client import get_firestore_client
+from firebase_admin import firestore
 import base64
 
 router = APIRouter()
@@ -55,22 +56,23 @@ async def exchange_public_keys(request: KeyExchangeRequest):
     Returns:
         Other user's public key (for X25519 key exchange)
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get other user's public key
-    result = supabase.table("users").select("public_key").eq("id", request.other_user_id).execute()
+    user_doc = db.collection('users').document(request.other_user_id).get()
 
-    if not result.data:
+    if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
 
-    public_key = result.data[0].get("public_key")
+    user_data = user_doc.to_dict()
+    public_key = user_data.get("public_key")
 
     if not public_key:
         raise HTTPException(status_code=404, detail="User has not set up encryption")
 
     return KeyExchangeResponse(
         user_id=request.other_user_id,
-        public_key=base64.b64encode(public_key).decode()
+        public_key=base64.b64encode(public_key).decode() if isinstance(public_key, bytes) else public_key
     )
 
 
@@ -100,11 +102,11 @@ async def setup_user_keys(user_id: str, password: str):
         )
 
         # Store in database
-        supabase = get_supabase_client()
-        supabase.table("users").update({
+        db = get_firestore_client()
+        db.collection('users').document(user_id).update({
             "public_key": keypair["public_key"],
             "encrypted_private_key": encrypted_private_key
-        }).eq("id", user_id).execute()
+        })
 
         return {
             "success": True,
@@ -124,10 +126,11 @@ async def upload_encrypted_data(request: EncryptedDataRequest):
     Server stores encrypted blob without ability to decrypt.
     Only the user with the encryption key can read the data.
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Store encrypted data
-    result = supabase.table("encrypted_data").insert({
+    encrypted_ref = db.collection('encrypted_data').document()
+    encrypted_data = {
         "user_id": request.user_id,
         "data_type": request.data_type,
         "encrypted_data": request.encrypted,
@@ -136,16 +139,16 @@ async def upload_encrypted_data(request: EncryptedDataRequest):
             "algorithm": "XChaCha20-Poly1305",
             "version": "1.0",
             **(request.metadata or {})
-        }
-    }).execute()
+        },
+        "created_at": firestore.SERVER_TIMESTAMP
+    }
 
-    if not result.data:
-        raise HTTPException(status_code=500, detail="Failed to store encrypted data")
+    encrypted_ref.set(encrypted_data)
 
     return {
         "success": True,
-        "data_id": result.data[0]["id"],
-        "stored_at": result.data[0].get("created_at")
+        "data_id": encrypted_ref.id,
+        "stored_at": "now"
     }
 
 
@@ -157,18 +160,22 @@ async def retrieve_encrypted_data(data_id: str, user_id: str):
     Returns the encrypted blob and metadata.
     Client must decrypt with their key.
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Get encrypted data
-    result = supabase.table("encrypted_data").select("*").eq("id", data_id).eq("user_id", user_id).execute()
+    encrypted_doc = db.collection('encrypted_data').document(data_id).get()
 
-    if not result.data:
+    if not encrypted_doc.exists:
         raise HTTPException(status_code=404, detail="Encrypted data not found")
 
-    data = result.data[0]
+    data = encrypted_doc.to_dict()
+
+    # Verify ownership
+    if data.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
 
     return {
-        "data_id": data["id"],
+        "data_id": data_id,
         "data_type": data["data_type"],
         "encrypted": data["encrypted_data"],
         "metadata": data.get("encryption_metadata", {}),
@@ -216,13 +223,18 @@ async def rotate_password(user_id: str, old_password: str, new_password: str):
     This requires re-encrypting all user data with the new key.
     May take time for users with lots of encrypted data.
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     try:
         # Get all encrypted data for user
-        result = supabase.table("encrypted_data").select("*").eq("user_id", user_id).execute()
+        encrypted_ref = db.collection('encrypted_data').where('user_id', '==', user_id)
+        encrypted_docs = encrypted_ref.stream()
 
-        encrypted_data_list = result.data if result.data else []
+        encrypted_data_list = []
+        for doc in encrypted_docs:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            encrypted_data_list.append(data)
 
         # Rotate keys
         rotation_result = KeyManager.rotate_master_key(
@@ -238,14 +250,14 @@ async def rotate_password(user_id: str, old_password: str, new_password: str):
         # Update all encrypted data in database
         for i, encrypted_item in enumerate(rotation_result["new_encrypted_data"]):
             data_id = encrypted_data_list[i]["id"]
-            supabase.table("encrypted_data").update({
+            db.collection('encrypted_data').document(data_id).update({
                 "encrypted_data": encrypted_item["encrypted"],
                 "encryption_metadata": {
                     "nonce": encrypted_item["nonce"],
                     "algorithm": encrypted_item["algorithm"],
                     "version": encrypted_item["version"]
                 }
-            }).eq("id", data_id).execute()
+            })
 
         return {
             "success": True,
@@ -267,21 +279,22 @@ async def get_encryption_status(user_id: str):
     - Number of encrypted data items
     - Encryption version
     """
-    supabase = get_supabase_client()
+    db = get_firestore_client()
 
     # Check if user has public key
-    user_result = supabase.table("users").select("public_key, encrypted_private_key").eq("id", user_id).execute()
+    user_doc = db.collection('users').document(user_id).get()
 
-    if not user_result.data:
+    if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
 
-    has_keys = user_result.data[0].get("public_key") is not None
+    user_data = user_doc.to_dict()
+    has_keys = user_data.get("public_key") is not None
 
     # Count encrypted data
     encrypted_count = 0
     if has_keys:
-        data_result = supabase.table("encrypted_data").select("id").eq("user_id", user_id).execute()
-        encrypted_count = len(data_result.data) if data_result.data else 0
+        encrypted_docs = db.collection('encrypted_data').where('user_id', '==', user_id).stream()
+        encrypted_count = len(list(encrypted_docs))
 
     return {
         "user_id": user_id,

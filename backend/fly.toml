@@ -1,0 +1,50 @@
+# Fly.io configuration for ReddyGo Backend
+
+app = "reddygo-api"
+primary_region = "sjc"  # San Jose (adjust based on user location)
+
+[build]
+  [build.args]
+    PYTHON_VERSION = "3.11"
+
+[env]
+  PORT = "8080"
+  ENVIRONMENT = "production"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[services.http_checks]]
+    interval = "10s"
+    timeout = "2s"
+    method = "get"
+    path = "/health"
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+
+[scaling]
+  min_machines = 1     # Always 1 instance minimum
+  max_machines = 10    # Cap at 10 for cost control
+
+[metrics]
+  port = 9091
+  path = "/metrics"

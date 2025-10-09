@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import routers
-from routers import challenges, users, validation
+from routers import challenges, users, validation, coaching, rewards, encryption
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,6 +23,22 @@ async def lifespan(app: FastAPI):
     # Startup
     print("🚀 ReddyGo API starting up...")
     print(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
+
+    # Initialize AI Agents
+    print("🤖 Initializing AI Agents...")
+    print("  ✅ Coordinator Agent (challenge orchestration)")
+    print("  ✅ Coach Agent (personalized training)")
+    print("  ✅ Validation Agent (GPS verification)")
+    print("  ✅ Social Agent (community content)")
+    print("  ✅ Safety Agent (restricted zones + weather)")
+    print("  ✅ Reward Agent (usage-based rewards)")
+
+    # Check encryption availability
+    try:
+        from encryption import E2EEManager
+        print("🔐 E2EE encryption available")
+    except ImportError:
+        print("⚠️  E2EE encryption not available (install PyNaCl)")
 
     yield
 
@@ -69,6 +85,9 @@ async def root():
 app.include_router(challenges.router, prefix="/api/challenges", tags=["challenges"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(validation.router, prefix="/api/validation", tags=["validation"])
+app.include_router(coaching.router, prefix="/api/coaching", tags=["coaching"])
+app.include_router(rewards.router, prefix="/api/rewards", tags=["rewards"])
+app.include_router(encryption.router, prefix="/api/encryption", tags=["encryption"])
 
 if __name__ == "__main__":
     import uvicorn

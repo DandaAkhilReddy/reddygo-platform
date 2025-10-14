@@ -14,8 +14,16 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Import routers
-from routers import challenges, users, validation, coaching, rewards, encryption, friends, communities, subscriptions, referrals, marketplace, ai_agents
+# Initialize Firebase BEFORE importing routers (routers may use firestore at import time)
+try:
+    from firebase_client import initialize_firebase
+    initialize_firebase()
+    print("✅ Firebase initialized before router imports")
+except Exception as e:
+    print(f"⚠️  Firebase initialization failed: {e}")
+
+# Import routers (after Firebase initialization)
+from routers import challenges, users, validation, coaching, rewards, encryption, friends, communities, subscriptions, referrals, marketplace, ai_agents, whoop_integration, photos
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -110,6 +118,8 @@ app.include_router(subscriptions.router, prefix="/api/subscriptions", tags=["sub
 app.include_router(referrals.router, prefix="/api/referrals", tags=["referrals"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
 app.include_router(ai_agents.router, prefix="/api/ai-agents", tags=["ai-agents"])
+app.include_router(whoop_integration.router, prefix="/api/integrations/whoop", tags=["whoop-integration"])
+app.include_router(photos.router, prefix="/api/photos", tags=["photos"])
 
 if __name__ == "__main__":
     import uvicorn

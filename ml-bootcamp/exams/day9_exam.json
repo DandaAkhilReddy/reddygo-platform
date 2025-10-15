@@ -1,0 +1,118 @@
+{
+  "title": "Production ML & MLOps",
+  "day": 9,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "What is the purpose of model serialization (saving models)?",
+      "options": [
+        "To make models smaller",
+        "To save trained models to disk for later use without retraining",
+        "To convert models to serial numbers",
+        "To list model parameters"
+      ],
+      "correct_answer": 1,
+      "explanation": "Model serialization saves the trained model's state (weights, architecture) so it can be loaded and used later."
+    },
+    {
+      "question": "What is FastAPI commonly used for in ML deployment?",
+      "options": [
+        "Training models faster",
+        "Creating REST API endpoints to serve model predictions",
+        "Speeding up data loading",
+        "Accelerating inference"
+      ],
+      "correct_answer": 1,
+      "explanation": "FastAPI is a modern Python framework for building APIs, commonly used to expose ML models as web services."
+    },
+    {
+      "question": "What is Docker and why is it useful for ML?",
+      "options": [
+        "A model type",
+        "A containerization platform that packages code, dependencies, and environment for consistent deployment",
+        "A database",
+        "A visualization tool"
+      ],
+      "correct_answer": 1,
+      "explanation": "Docker containers ensure your ML application runs consistently across different environments by bundling all dependencies."
+    },
+    {
+      "question": "What is MLflow used for?",
+      "options": [
+        "Data preprocessing",
+        "Experiment tracking, model versioning, and deployment management",
+        "Data visualization",
+        "Model training"
+      ],
+      "correct_answer": 1,
+      "explanation": "MLflow tracks experiments (parameters, metrics), versions models, and helps deploy them, managing the ML lifecycle."
+    },
+    {
+      "question": "What is A/B testing in ML?",
+      "options": [
+        "Testing two datasets",
+        "Comparing two models by serving them to different user groups and measuring performance",
+        "Testing alphabet recognition",
+        "Testing two features"
+      ],
+      "correct_answer": 1,
+      "explanation": "A/B testing deploys different model versions to different users to compare real-world performance before full rollout."
+    },
+    {
+      "question": "Why is model monitoring important in production?",
+      "options": [
+        "To watch the training process",
+        "To detect data drift, performance degradation, and other issues in deployed models",
+        "To monitor server CPU",
+        "To track code changes"
+      ],
+      "correct_answer": 1,
+      "explanation": "Production models can degrade as data distributions change. Monitoring detects issues like data drift and performance drops."
+    },
+    {
+      "question": "What is data drift?",
+      "options": [
+        "Data moving between servers",
+        "When the distribution of incoming data changes over time, potentially degrading model performance",
+        "Random data changes",
+        "Data corruption"
+      ],
+      "correct_answer": 1,
+      "explanation": "Data drift occurs when production data differs from training data, causing model performance to decrease."
+    },
+    {
+      "question": "What is a feature store?",
+      "options": [
+        "A place to buy features",
+        "A centralized repository for storing and serving ML features consistently",
+        "A store for storing models",
+        "A database for raw data"
+      ],
+      "correct_answer": 1,
+      "explanation": "Feature stores provide consistent feature computation and serving across training and production, preventing train-serve skew."
+    },
+    {
+      "question": "What is CI/CD in the context of ML?",
+      "options": [
+        "Collecting and Displaying data",
+        "Continuous Integration/Deployment - automating model testing, validation, and deployment",
+        "Creating and Deleting models",
+        "Classifying and Detecting"
+      ],
+      "correct_answer": 1,
+      "explanation": "CI/CD automates the pipeline from code changes through testing to deployment, ensuring reliable and fast model updates."
+    },
+    {
+      "question": "What is the difference between batch and real-time inference?",
+      "options": [
+        "Batch is faster",
+        "Batch processes many predictions offline, real-time serves predictions on-demand with low latency",
+        "Real-time uses batches",
+        "They are the same"
+      ],
+      "correct_answer": 1,
+      "explanation": "Batch inference processes large datasets offline. Real-time inference serves individual predictions immediately as requested."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "title": "Deep Learning Part 2 - CNNs & RNNs",
+  "day": 6,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "What is the purpose of convolutional layers in CNNs?",
+      "options": [
+        "To reduce the number of parameters",
+        "To extract spatial features like edges and patterns from images",
+        "To flatten the input",
+        "To perform classification"
+      ],
+      "correct_answer": 1,
+      "explanation": "Convolutional layers use learnable filters to detect local patterns like edges, textures, and shapes in images."
+    },
+    {
+      "question": "What does pooling (like MaxPooling) do?",
+      "options": [
+        "Increases image size",
+        "Reduces spatial dimensions while retaining important features",
+        "Adds more channels",
+        "Normalizes the data"
+      ],
+      "correct_answer": 1,
+      "explanation": "Pooling reduces spatial dimensions (downsampling), making the network more efficient and robust to small translations."
+    },
+    {
+      "question": "What is the main advantage of RNNs over feedforward networks for sequence data?",
+      "options": [
+        "RNNs are faster",
+        "RNNs have memory and can process sequences of variable length",
+        "RNNs use less memory",
+        "RNNs don't need training"
+      ],
+      "correct_answer": 1,
+      "explanation": "RNNs maintain hidden state across time steps, allowing them to remember past information in sequences."
+    },
+    {
+      "question": "What problem do LSTMs solve that vanilla RNNs struggle with?",
+      "options": [
+        "Speed of training",
+        "Vanishing gradients in long sequences",
+        "Number of parameters",
+        "Overfitting"
+      ],
+      "correct_answer": 1,
+      "explanation": "LSTMs use gates to control information flow, solving the vanishing gradient problem and enabling learning of long-term dependencies."
+    },
+    {
+      "question": "What is dropout used for?",
+      "options": [
+        "Removing outliers from data",
+        "Preventing overfitting by randomly deactivating neurons during training",
+        "Reducing network size",
+        "Speeding up training"
+      ],
+      "correct_answer": 1,
+      "explanation": "Dropout randomly sets neuron outputs to zero during training, forcing the network to learn robust features and preventing overfitting."
+    },
+    {
+      "question": "What does batch normalization do?",
+      "options": [
+        "Groups data into batches",
+        "Normalizes layer inputs across the batch, stabilizing training",
+        "Reduces batch size",
+        "Removes bad batches"
+      ],
+      "correct_answer": 1,
+      "explanation": "Batch normalization normalizes layer inputs, reducing internal covariate shift and allowing faster, more stable training."
+    },
+    {
+      "question": "What is transfer learning?",
+      "options": [
+        "Moving model between devices",
+        "Using a pre-trained model and fine-tuning it for a new task",
+        "Transferring data between models",
+        "Converting model formats"
+      ],
+      "correct_answer": 1,
+      "explanation": "Transfer learning reuses a model trained on one task (like ImageNet) and adapts it to a new task with less data."
+    },
+    {
+      "question": "What is data augmentation?",
+      "options": [
+        "Adding more training data",
+        "Creating modified versions of existing data (flips, rotations) to increase dataset size",
+        "Cleaning the data",
+        "Reducing data size"
+      ],
+      "correct_answer": 1,
+      "explanation": "Data augmentation artificially increases training data by applying transformations (flip, crop, rotate), improving generalization."
+    },
+    {
+      "question": "What is the typical structure of a CNN for image classification?",
+      "options": [
+        "Only convolutional layers",
+        "Conv layers → Pooling → Conv layers → Pooling → Fully connected → Output",
+        "Only fully connected layers",
+        "Pooling → Conv → Pooling → Conv"
+      ],
+      "correct_answer": 1,
+      "explanation": "CNNs typically alternate convolutional and pooling layers for feature extraction, followed by fully connected layers for classification."
+    },
+    {
+      "question": "What is a learning rate scheduler?",
+      "options": [
+        "Schedules when to train",
+        "Adjusts learning rate during training (e.g., reduce on plateau)",
+        "Schedules data loading",
+        "Plans network architecture"
+      ],
+      "correct_answer": 1,
+      "explanation": "Learning rate schedulers dynamically adjust the learning rate during training, often reducing it when progress slows."
+    }
+  ]
+}

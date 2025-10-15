@@ -1,0 +1,548 @@
+{
+  "title": "Final Comprehensive Exam",
+  "day": 10,
+  "total_questions": 50,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "[Python/NumPy] What is the result of np.array([1,2,3]) * 2?",
+      "options": ["[1,2,3,1,2,3]", "[2,4,6]", "Error", "[3,4,5]"],
+      "correct_answer": 1,
+      "explanation": "NumPy performs element-wise multiplication."
+    },
+    {
+      "question": "[Python/NumPy] What does broadcasting allow in NumPy?",
+      "options": [
+        "Sending data over network",
+        "Operations on arrays of different shapes by expanding them automatically",
+        "Making arrays larger",
+        "Parallel processing"
+      ],
+      "correct_answer": 1,
+      "explanation": "Broadcasting automatically expands arrays to compatible shapes for element-wise operations."
+    },
+    {
+      "question": "[Pandas] How do you select rows 10-20 from a DataFrame df?",
+      "options": ["df[10:20]", "df.iloc[10:20]", "df.select(10,20)", "df.rows(10:20)"],
+      "correct_answer": 1,
+      "explanation": "iloc uses integer-based indexing to select rows."
+    },
+    {
+      "question": "[Pandas] What does df.isnull().sum() return?",
+      "options": [
+        "Total null values",
+        "Count of null values per column",
+        "Boolean mask",
+        "Nothing"
+      ],
+      "correct_answer": 1,
+      "explanation": "isnull() creates boolean mask, sum() counts True values per column."
+    },
+    {
+      "question": "[Pandas] What is the purpose of pd.concat()?",
+      "options": [
+        "String concatenation",
+        "Combining multiple DataFrames vertically or horizontally",
+        "Connecting to database",
+        "Compressing data"
+      ],
+      "correct_answer": 1,
+      "explanation": "concat() combines DataFrames along an axis (rows or columns)."
+    },
+    {
+      "question": "[ML Fundamentals] What is the purpose of regularization?",
+      "options": [
+        "Make data regular",
+        "Prevent overfitting by penalizing large weights",
+        "Speed up training",
+        "Normalize features"
+      ],
+      "correct_answer": 1,
+      "explanation": "Regularization (L1/L2) adds penalty to loss for large weights, preventing overfitting."
+    },
+    {
+      "question": "[ML Fundamentals] What is precision in classification?",
+      "options": [
+        "Overall accuracy",
+        "TP / (TP + FP) - fraction of positive predictions that are correct",
+        "TP / (TP + FN)",
+        "Number of correct predictions"
+      ],
+      "correct_answer": 1,
+      "explanation": "Precision measures what fraction of predicted positives are actually positive."
+    },
+    {
+      "question": "[ML Fundamentals] What is recall (sensitivity)?",
+      "options": [
+        "TP / (TP + FP)",
+        "TP / (TP + FN) - fraction of actual positives correctly identified",
+        "TN / (TN + FP)",
+        "Overall accuracy"
+      ],
+      "correct_answer": 1,
+      "explanation": "Recall measures what fraction of actual positives the model found."
+    },
+    {
+      "question": "[ML Fundamentals] What does the ROC curve plot?",
+      "options": [
+        "Accuracy vs threshold",
+        "True Positive Rate vs False Positive Rate",
+        "Precision vs Recall",
+        "Training loss over time"
+      ],
+      "correct_answer": 1,
+      "explanation": "ROC curve plots TPR (recall) vs FPR across different classification thresholds."
+    },
+    {
+      "question": "[ML Fundamentals] What is the curse of dimensionality?",
+      "options": [
+        "Too many dimensions in arrays",
+        "As features increase, data becomes sparse and models need exponentially more data",
+        "Dimensions are cursed",
+        "Models become too slow"
+      ],
+      "correct_answer": 1,
+      "explanation": "High-dimensional spaces are mostly empty; distance becomes less meaningful, requiring much more data."
+    },
+    {
+      "question": "[Advanced ML] What is ensemble learning?",
+      "options": [
+        "Training one model",
+        "Combining predictions from multiple models to improve performance",
+        "Learning in groups",
+        "Playing music"
+      ],
+      "correct_answer": 1,
+      "explanation": "Ensemble methods combine multiple models (e.g., Random Forest, XGBoost) for better predictions."
+    },
+    {
+      "question": "[Advanced ML] What makes gradient boosting 'boosting'?",
+      "options": [
+        "It's faster",
+        "Models are trained sequentially, each correcting previous errors",
+        "It uses more data",
+        "It boosts accuracy to 100%"
+      ],
+      "correct_answer": 1,
+      "explanation": "Boosting builds models sequentially where each new model focuses on examples previous models got wrong."
+    },
+    {
+      "question": "[Advanced ML] What is the difference between bagging and pasting?",
+      "options": [
+        "No difference",
+        "Bagging samples with replacement, pasting without",
+        "Bagging is for trees only",
+        "Pasting is faster"
+      ],
+      "correct_answer": 1,
+      "explanation": "Both sample training data, but bagging allows same sample multiple times (bootstrap), pasting doesn't."
+    },
+    {
+      "question": "[Advanced ML] What does early stopping prevent?",
+      "options": [
+        "Training from starting",
+        "Overfitting by stopping when validation performance stops improving",
+        "Models from converging",
+        "Data loading"
+      ],
+      "correct_answer": 1,
+      "explanation": "Early stopping monitors validation performance and stops training when it plateaus, preventing overfitting."
+    },
+    {
+      "question": "[Advanced ML] What is the purpose of out-of-bag (OOB) evaluation in Random Forests?",
+      "options": [
+        "Removing outliers",
+        "Evaluating on samples not used in bootstrap, providing validation without separate test set",
+        "Bagging data",
+        "Cleaning bags of data"
+      ],
+      "correct_answer": 1,
+      "explanation": "OOB samples weren't in bootstrap for a tree, so can be used for unbiased evaluation."
+    },
+    {
+      "question": "[Deep Learning] What is the vanishing gradient problem?",
+      "options": [
+        "Gradients disappearing",
+        "Gradients become very small in early layers, making training difficult",
+        "Gradients are invisible",
+        "No gradients computed"
+      ],
+      "correct_answer": 1,
+      "explanation": "In deep networks, gradients can become tiny during backprop, preventing early layers from learning."
+    },
+    {
+      "question": "[Deep Learning] What activation function helps prevent vanishing gradients?",
+      "options": [
+        "Sigmoid",
+        "ReLU",
+        "Linear",
+        "Tanh"
+      ],
+      "correct_answer": 1,
+      "explanation": "ReLU doesn't saturate for positive values, maintaining larger gradients and preventing vanishing."
+    },
+    {
+      "question": "[Deep Learning] What is the dying ReLU problem?",
+      "options": [
+        "ReLU stops working",
+        "Neurons get stuck always outputting 0 and stop learning",
+        "ReLU needs replacement",
+        "ReLU is too slow"
+      ],
+      "correct_answer": 1,
+      "explanation": "If neuron always outputs negative, ReLU always returns 0, gradient is 0, neuron can't update."
+    },
+    {
+      "question": "[Deep Learning] What is gradient clipping?",
+      "options": [
+        "Removing gradients",
+        "Limiting gradient magnitude to prevent exploding gradients",
+        "Copying gradients",
+        "Cutting gradient computation"
+      ],
+      "correct_answer": 1,
+      "explanation": "Gradient clipping caps gradient magnitude to prevent explosively large updates that destabilize training."
+    },
+    {
+      "question": "[Deep Learning] What is teacher forcing in RNN training?",
+      "options": [
+        "Teacher helps train model",
+        "Using ground truth outputs as inputs to next time step during training",
+        "Forcing model to learn",
+        "Teaching the model"
+      ],
+      "correct_answer": 1,
+      "explanation": "Teacher forcing feeds ground truth at each step during training, helping RNNs learn more stable."
+    },
+    {
+      "question": "[PyTorch] What does requires_grad=True mean?",
+      "options": [
+        "Tensor requires graduation",
+        "Track operations on tensor to compute gradients",
+        "Tensor needs to pass exam",
+        "Tensor must improve"
+      ],
+      "correct_answer": 1,
+      "explanation": "requires_grad=True tells PyTorch to build computation graph for automatic differentiation."
+    },
+    {
+      "question": "[PyTorch] What is the difference between model.eval() and model.train()?",
+      "options": [
+        "eval() tests, train() trains",
+        "eval() changes behavior of dropout/batchnorm for inference, train() for training",
+        "No difference",
+        "eval() is faster"
+      ],
+      "correct_answer": 1,
+      "explanation": "eval() disables dropout and uses running stats for batchnorm. train() enables dropout and updates batchnorm stats."
+    },
+    {
+      "question": "[PyTorch] What does torch.no_grad() do?",
+      "options": [
+        "Removes gradients",
+        "Disables gradient computation for efficiency during inference",
+        "Stops training",
+        "Zeros gradients"
+      ],
+      "correct_answer": 1,
+      "explanation": "no_grad() context manager prevents tracking operations, saving memory and computation during inference."
+    },
+    {
+      "question": "[PyTorch] What is the purpose of nn.ModuleList()?",
+      "options": [
+        "List of modules",
+        "Container that properly registers modules for parameter tracking and device placement",
+        "Python list",
+        "Module listing"
+      ],
+      "correct_answer": 1,
+      "explanation": "nn.ModuleList registers modules so their parameters are tracked and moved with model.to(device)."
+    },
+    {
+      "question": "[PyTorch] What does model.state_dict() return?",
+      "options": [
+        "Model statistics",
+        "Dictionary of all model parameters and buffers",
+        "Training state",
+        "Model code"
+      ],
+      "correct_answer": 1,
+      "explanation": "state_dict() returns all learnable parameters as a dictionary, used for saving/loading models."
+    },
+    {
+      "question": "[CV] What is the receptive field in CNNs?",
+      "options": [
+        "Field where network receives data",
+        "Region of input that affects a particular neuron's output",
+        "Size of convolutional filter",
+        "Network capacity"
+      ],
+      "correct_answer": 1,
+      "explanation": "Receptive field is the input region a neuron 'sees'. It grows with depth in CNNs."
+    },
+    {
+      "question": "[CV] What is the purpose of padding in CNNs?",
+      "options": [
+        "Add empty space",
+        "Preserve spatial dimensions and capture edge information",
+        "Make images bigger",
+        "Add noise"
+      ],
+      "correct_answer": 1,
+      "explanation": "Padding adds border pixels so convolutions don't shrink spatial dimensions and edge pixels get equal processing."
+    },
+    {
+      "question": "[CV] What is stride in convolution?",
+      "options": [
+        "How far network walks",
+        "Step size when sliding the filter across the input",
+        "Length of training",
+        "Network speed"
+      ],
+      "correct_answer": 1,
+      "explanation": "Stride controls how many pixels the filter moves each step. Larger stride reduces output size."
+    },
+    {
+      "question": "[CV] What is the bottle neck architecture in ResNet?",
+      "options": [
+        "Network bottleneck",
+        "Using 1x1 convolutions to reduce dimensions before expensive 3x3 conv",
+        "Narrow network",
+        "Performance bottleneck"
+      ],
+      "correct_answer": 1,
+      "explanation": "1x1 conv reduces channels before 3x3 conv, then 1x1 expands back, reducing computation."
+    },
+    {
+      "question": "[CV] What is the Intersection over Union (IoU)?",
+      "options": [
+        "Set intersection",
+        "Overlap between predicted and ground truth boxes / union of both boxes",
+        "Model accuracy",
+        "Loss function"
+      ],
+      "correct_answer": 1,
+      "explanation": "IoU measures bounding box accuracy: area of overlap / area of union. Used in object detection."
+    },
+    {
+      "question": "[NLP] What is the vocabulary in NLP models?",
+      "options": [
+        "Dictionary definitions",
+        "Set of all unique tokens the model knows",
+        "Training data",
+        "Model parameters"
+      ],
+      "correct_answer": 1,
+      "explanation": "Vocabulary is the set of all tokens (words/subwords) the model can process, each with a unique ID."
+    },
+    {
+      "question": "[NLP] What is BPE (Byte Pair Encoding)?",
+      "options": [
+        "Binary encoding",
+        "Subword tokenization that iteratively merges frequent character pairs",
+        "Byte processing",
+        "Pair matching"
+      ],
+      "correct_answer": 1,
+      "explanation": "BPE learns subword units by merging frequent pairs, balancing vocabulary size and coverage."
+    },
+    {
+      "question": "[NLP] What is the difference between encoder and decoder in transformers?",
+      "options": [
+        "No difference",
+        "Encoder processes input bidirectionally, decoder generates output autoregressively",
+        "Encoder is faster",
+        "Decoder is bigger"
+      ],
+      "correct_answer": 1,
+      "explanation": "Encoder (BERT) understands input. Decoder (GPT) generates output one token at a time."
+    },
+    {
+      "question": "[NLP] What is positional encoding?",
+      "options": [
+        "Encoding positions",
+        "Adding position information to embeddings since transformers don't have inherent order",
+        "GPS coordinates",
+        "Word order"
+      ],
+      "correct_answer": 1,
+      "explanation": "Transformers process all tokens simultaneously, so positional encoding adds sequence order information."
+    },
+    {
+      "question": "[NLP] What is zero-shot learning in NLP?",
+      "options": [
+        "Learning without data",
+        "Model performs task without task-specific training examples",
+        "No learning",
+        "Fast learning"
+      ],
+      "correct_answer": 1,
+      "explanation": "Zero-shot means model handles tasks it wasn't explicitly trained on, using only task description."
+    },
+    {
+      "question": "[MLOps] What is model versioning?",
+      "options": [
+        "Software versions",
+        "Tracking different versions of trained models with metadata",
+        "Code versions",
+        "Data versions"
+      ],
+      "correct_answer": 1,
+      "explanation": "Model versioning tracks each model iteration with metrics, parameters, and code for reproducibility."
+    },
+    {
+      "question": "[MLOps] What is the purpose of model registry?",
+      "options": [
+        "Register models",
+        "Centralized store for managing model lifecycle from staging to production",
+        "List of models",
+        "Model documentation"
+      ],
+      "correct_answer": 1,
+      "explanation": "Model registry tracks models through stages (dev/staging/prod) with versions and metadata."
+    },
+    {
+      "question": "[MLOps] What is shadow mode deployment?",
+      "options": [
+        "Dark theme",
+        "New model runs parallel to production but doesn't serve users, only logs predictions",
+        "Hidden deployment",
+        "Testing in shadows"
+      ],
+      "correct_answer": 1,
+      "explanation": "Shadow mode lets new model run alongside production to compare predictions before full deployment."
+    },
+    {
+      "question": "[MLOps] What is canary deployment?",
+      "options": [
+        "Bird deployment",
+        "Gradually rolling out new model to small percentage of users before full deployment",
+        "Yellow deployment",
+        "Fast deployment"
+      ],
+      "correct_answer": 1,
+      "explanation": "Canary releases new model to small user subset first to catch issues before full rollout."
+    },
+    {
+      "question": "[MLOps] What is model explainability?",
+      "options": [
+        "Explaining how to use model",
+        "Understanding and interpreting why model makes specific predictions",
+        "Model documentation",
+        "Model training"
+      ],
+      "correct_answer": 1,
+      "explanation": "Explainability techniques (SHAP, LIME) help understand feature importance and decision rationale."
+    },
+    {
+      "question": "[General] What is transfer learning?",
+      "options": [
+        "Moving models",
+        "Using knowledge from one task to improve learning on related task",
+        "Transferring data",
+        "Moving between frameworks"
+      ],
+      "correct_answer": 1,
+      "explanation": "Transfer learning reuses pre-trained models, leveraging learned features for new tasks with less data."
+    },
+    {
+      "question": "[General] What is few-shot learning?",
+      "options": [
+        "Learning with few photos",
+        "Learning new task with very few examples (3-10)",
+        "Short training",
+        "Small model"
+      ],
+      "correct_answer": 1,
+      "explanation": "Few-shot learning adapts to new tasks with minimal examples, often using meta-learning or prompting."
+    },
+    {
+      "question": "[General] What is online learning?",
+      "options": [
+        "Learning on the internet",
+        "Continuously updating model as new data arrives",
+        "Web-based training",
+        "Remote learning"
+      ],
+      "correct_answer": 1,
+      "explanation": "Online learning updates model incrementally with new data streams, adapting to changing patterns."
+    },
+    {
+      "question": "[General] What is active learning?",
+      "options": [
+        "Energetic learning",
+        "Model requests labels for most informative examples to learn efficiently",
+        "Interactive learning",
+        "Fast learning"
+      ],
+      "correct_answer": 1,
+      "explanation": "Active learning selects which examples to label, maximizing learning from limited labeling budget."
+    },
+    {
+      "question": "[General] What is meta-learning?",
+      "options": [
+        "Learning metadata",
+        "Learning how to learn - training models to quickly adapt to new tasks",
+        "Facebook learning",
+        "Advanced learning"
+      ],
+      "correct_answer": 1,
+      "explanation": "Meta-learning trains models on many tasks so they can quickly adapt to new tasks with minimal examples."
+    },
+    {
+      "question": "[General] What is the difference between supervised and self-supervised learning?",
+      "options": [
+        "No difference",
+        "Supervised uses manual labels, self-supervised creates labels from the data itself",
+        "Self-supervised is unsupervised",
+        "Supervised is better"
+      ],
+      "correct_answer": 1,
+      "explanation": "Self-supervised learning creates pretext tasks from unlabeled data (e.g., predicting masked words in BERT)."
+    },
+    {
+      "question": "[General] What is federated learning?",
+      "options": [
+        "Federal government learning",
+        "Training model across decentralized devices without sharing raw data",
+        "Centralized learning",
+        "Fast learning"
+      ],
+      "correct_answer": 1,
+      "explanation": "Federated learning trains on distributed data (e.g., phones) keeping data local, only sharing model updates."
+    },
+    {
+      "question": "[General] What is the purpose of batch size in training?",
+      "options": [
+        "Size of data batches",
+        "Number of samples processed before updating weights, affecting speed/memory/generalization",
+        "Total dataset size",
+        "Model size"
+      ],
+      "correct_answer": 1,
+      "explanation": "Batch size balances computation efficiency (larger=faster) vs generalization (smaller=better gradients)."
+    },
+    {
+      "question": "[General] What is the learning rate?",
+      "options": [
+        "Speed of learning",
+        "Step size for parameter updates, controlling how much weights change per iteration",
+        "Training duration",
+        "Model complexity"
+      ],
+      "correct_answer": 1,
+      "explanation": "Learning rate controls update magnitude. Too high causes instability, too low slows convergence."
+    },
+    {
+      "question": "[Capstone] You built a model with 99% accuracy but client is unhappy. Most likely issue?",
+      "options": [
+        "Model is too accurate",
+        "Imbalanced classes making accuracy misleading (e.g., 99% of one class)",
+        "Client doesn't understand ML",
+        "Need 100% accuracy"
+      ],
+      "correct_answer": 1,
+      "explanation": "High accuracy on imbalanced data is misleading. Model might predict majority class always. Use F1/precision/recall."
+    }
+  ]
+}

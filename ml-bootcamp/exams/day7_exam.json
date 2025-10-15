@@ -1,0 +1,118 @@
+{
+  "title": "Computer Vision",
+  "day": 7,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "What is the ImageNet dataset commonly used for?",
+      "options": [
+        "Text classification",
+        "Large-scale image classification with 1000 classes",
+        "Time series forecasting",
+        "Speech recognition"
+      ],
+      "correct_answer": 1,
+      "explanation": "ImageNet is a massive dataset with millions of labeled images across 1000 classes, used for pre-training vision models."
+    },
+    {
+      "question": "Which of these is a popular pre-trained CNN architecture?",
+      "options": [
+        "LSTM",
+        "ResNet",
+        "BERT",
+        "GPT"
+      ],
+      "correct_answer": 1,
+      "explanation": "ResNet (Residual Network) is a popular CNN architecture with skip connections, pre-trained on ImageNet."
+    },
+    {
+      "question": "What are residual connections (skip connections) in ResNet?",
+      "options": [
+        "Connections to residual data",
+        "Shortcut connections that add input to output, helping train very deep networks",
+        "Connections that remove noise",
+        "Random connections"
+      ],
+      "correct_answer": 1,
+      "explanation": "Skip connections add the layer input to its output, allowing gradients to flow better and enabling very deep networks (100+ layers)."
+    },
+    {
+      "question": "What is object detection?",
+      "options": [
+        "Classifying entire images",
+        "Locating and classifying multiple objects in an image with bounding boxes",
+        "Detecting image quality",
+        "Finding image edges"
+      ],
+      "correct_answer": 1,
+      "explanation": "Object detection finds where objects are (bounding boxes) and what they are (classes) in an image."
+    },
+    {
+      "question": "What is semantic segmentation?",
+      "options": [
+        "Dividing text into segments",
+        "Classifying each pixel in an image to its category",
+        "Segmenting audio",
+        "Dividing data into train/test"
+      ],
+      "correct_answer": 1,
+      "explanation": "Semantic segmentation assigns a class label to every pixel, creating a mask showing where each object class is."
+    },
+    {
+      "question": "What is the purpose of non-maximum suppression (NMS)?",
+      "options": [
+        "Removing noise from images",
+        "Removing duplicate/overlapping bounding boxes in object detection",
+        "Reducing image size",
+        "Suppressing gradients"
+      ],
+      "correct_answer": 1,
+      "explanation": "NMS removes redundant overlapping bounding boxes, keeping only the box with highest confidence for each object."
+    },
+    {
+      "question": "What is the difference between classification and localization?",
+      "options": [
+        "They are the same",
+        "Classification labels the image, localization also finds where the object is",
+        "Localization is faster",
+        "Classification uses more data"
+      ],
+      "correct_answer": 1,
+      "explanation": "Classification answers 'what is it?', localization answers 'what is it and where is it?' (bounding box)."
+    },
+    {
+      "question": "What image preprocessing is typically done before feeding to a CNN?",
+      "options": [
+        "Convert to grayscale only",
+        "Resize to fixed size, normalize pixel values (e.g., to [0,1] or standardize)",
+        "Compress the image",
+        "Add noise"
+      ],
+      "correct_answer": 1,
+      "explanation": "Images are resized to network's expected input size and pixels are normalized for better training stability."
+    },
+    {
+      "question": "What is feature visualization in CNNs?",
+      "options": [
+        "Listing all features",
+        "Visualizing what patterns/features each layer or filter detects",
+        "Plotting training curves",
+        "Showing the network architecture"
+      ],
+      "correct_answer": 1,
+      "explanation": "Feature visualization shows what visual patterns activate specific neurons, helping interpret what the network learned."
+    },
+    {
+      "question": "Which technique helps CNNs achieve better performance with limited data?",
+      "options": [
+        "Using more layers",
+        "Transfer learning from pre-trained models + data augmentation",
+        "Reducing learning rate to zero",
+        "Removing dropout"
+      ],
+      "correct_answer": 1,
+      "explanation": "Transfer learning leverages knowledge from models trained on large datasets, and data augmentation increases effective dataset size."
+    }
+  ]
+}

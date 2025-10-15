@@ -1,0 +1,118 @@
+{
+  "title": "Natural Language Processing",
+  "day": 8,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "What is tokenization in NLP?",
+      "options": [
+        "Encrypting text",
+        "Breaking text into smaller units like words or subwords",
+        "Translating text",
+        "Summarizing text"
+      ],
+      "correct_answer": 1,
+      "explanation": "Tokenization splits text into tokens (words, subwords, or characters) that can be processed by NLP models."
+    },
+    {
+      "question": "What are word embeddings?",
+      "options": [
+        "Words printed on paper",
+        "Dense vector representations of words that capture semantic meaning",
+        "Word counts",
+        "Word definitions"
+      ],
+      "correct_answer": 1,
+      "explanation": "Word embeddings map words to dense vectors where similar words have similar vectors (e.g., Word2Vec, GloVe)."
+    },
+    {
+      "question": "What is the main innovation of the Transformer architecture?",
+      "options": [
+        "Using CNNs for text",
+        "Self-attention mechanism that processes entire sequences in parallel",
+        "Faster tokenization",
+        "Smaller model size"
+      ],
+      "correct_answer": 1,
+      "explanation": "Transformers use self-attention to weigh the importance of all words simultaneously, enabling parallelization and better long-range dependencies."
+    },
+    {
+      "question": "What does BERT stand for and what is it?",
+      "options": [
+        "Basic Embedding Representation Tool",
+        "Bidirectional Encoder Representations from Transformers - a pre-trained language model",
+        "Binary Encoded Recurrent Transformer",
+        "Best Embedding Retrieval Technique"
+      ],
+      "correct_answer": 1,
+      "explanation": "BERT is a transformer-based model pre-trained on massive text, bidirectionally understanding context from both directions."
+    },
+    {
+      "question": "What is fine-tuning in NLP?",
+      "options": [
+        "Correcting grammar",
+        "Taking a pre-trained model and training it on a specific task with task-specific data",
+        "Tuning hyperparameters",
+        "Editing text"
+      ],
+      "correct_answer": 1,
+      "explanation": "Fine-tuning adapts a pre-trained model (like BERT) to a specific task by continuing training on task-specific data."
+    },
+    {
+      "question": "What is the Hugging Face Transformers library used for?",
+      "options": [
+        "Image processing",
+        "Easily loading and using pre-trained NLP models like BERT, GPT, etc.",
+        "Data visualization",
+        "Database management"
+      ],
+      "correct_answer": 1,
+      "explanation": "Hugging Face provides easy access to thousands of pre-trained transformer models and training utilities."
+    },
+    {
+      "question": "What is the difference between BERT and GPT?",
+      "options": [
+        "BERT is bidirectional (encoder), GPT is unidirectional autoregressive (decoder)",
+        "They are the same",
+        "BERT is for images, GPT for text",
+        "GPT is older than BERT"
+      ],
+      "correct_answer": 0,
+      "explanation": "BERT reads text bidirectionally for understanding tasks. GPT reads left-to-right for generation tasks."
+    },
+    {
+      "question": "What is sentiment analysis?",
+      "options": [
+        "Analyzing sentence structure",
+        "Determining the emotional tone (positive/negative/neutral) of text",
+        "Counting words",
+        "Translating text"
+      ],
+      "correct_answer": 1,
+      "explanation": "Sentiment analysis classifies text based on expressed sentiment, commonly used for reviews, social media, etc."
+    },
+    {
+      "question": "What is named entity recognition (NER)?",
+      "options": [
+        "Recognizing famous people",
+        "Identifying and classifying named entities (people, places, organizations) in text",
+        "Finding entity names in databases",
+        "Naming variables"
+      ],
+      "correct_answer": 1,
+      "explanation": "NER locates and classifies entities in text into categories like PERSON, LOCATION, ORGANIZATION, DATE, etc."
+    },
+    {
+      "question": "What is the attention mechanism in transformers?",
+      "options": [
+        "Making the model pay attention",
+        "A method to weigh the importance of different words when processing each word",
+        "Focusing on important data",
+        "Alerting when training is done"
+      ],
+      "correct_answer": 1,
+      "explanation": "Attention computes relevance scores between words, allowing the model to focus on relevant context for each word."
+    }
+  ]
+}

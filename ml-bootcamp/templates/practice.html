@@ -7,18 +7,16 @@
 <script src="https://cdn.jsdelivr.net/gh/skulpt/skulpt-dist@1.2.0/skulpt.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/skulpt/skulpt-dist@1.2.0/skulpt-stdlib.js"></script>
 
+<!-- Monaco Editor (VS Code Editor) -->
+<link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/editor/editor.main.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+
 <style>
-    .code-editor {
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        line-height: 1.5;
+    .code-editor-container {
         border: 2px solid #e2e8f0;
         border-radius: 8px;
-        padding: 16px;
-        background-color: #1e293b;
-        color: #e2e8f0;
-        min-height: 300px;
-        resize: vertical;
+        overflow: hidden;
+        height: 400px;
     }
 
     .output-box {
@@ -30,6 +28,7 @@
         padding: 16px;
         border-radius: 8px;
         min-height: 150px;
+        max-height: 400px;
         white-space: pre-wrap;
         overflow-y: auto;
     }
@@ -42,6 +41,13 @@
     .solution-box {
         background-color: #dcfce7;
         border-left: 4px solid #10b981;
+    }
+
+    .solution-editor-container {
+        border: 2px solid #10b981;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 300px;
     }
 </style>
 {% endblock %}
@@ -121,16 +127,16 @@
                     <div class="flex space-x-2">
                         <button onclick="resetCode()"
                                 class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition">
-                            Reset
+                            🔄 Reset
                         </button>
                         <button onclick="runCode()"
-                                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
-                            ▶ Run Code
+                                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition shadow-lg">
+                            ▶ Run Code (Ctrl+Enter)
                         </button>
                     </div>
                 </div>
 
-                <textarea id="code-editor" class="code-editor w-full" spellcheck="false">{{ exercise.starter_code }}</textarea>
+                <div id="code-editor" class="code-editor-container"></div>
             </div>
 
             <!-- Output Card -->
@@ -145,14 +151,14 @@
                     <h2 class="text-xl font-bold text-gray-800">✨ Solution</h2>
                     <button onclick="copySolution()"
                             class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
-                        Copy
+                        📋 Copy Solution
                     </button>
                 </div>
                 <div class="solution-box p-4 rounded-lg mb-4">
-                    <p class="text-sm text-green-800 font-semibold mb-2">Explanation:</p>
+                    <p class="text-sm text-green-800 font-semibold mb-2">💡 Explanation:</p>
                     <p class="text-sm text-gray-700">{{ exercise.explanation }}</p>
                 </div>
-                <textarea id="solution-code" class="code-editor w-full" readonly>{{ exercise.solution }}</textarea>
+                <div id="solution-editor" class="solution-editor-container"></div>
             </div>
 
             <button onclick="showSolution()" id="show-solution-btn"
@@ -171,6 +177,43 @@
 </div>
 
 <script>
+// Starter code and solution
+const starterCode = `{{ exercise.starter_code|safe }}`;
+const solutionCode = `{{ exercise.solution|safe }}`;
+
+// Monaco Editor instances
+let editor = null;
+let solutionEditor = null;
+
+// Initialize Monaco Editor
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+require(['vs/editor/editor.main'], function() {
+    // Main code editor
+    editor = monaco.editor.create(document.getElementById('code-editor'), {
+        value: starterCode,
+        language: 'python',
+        theme: 'vs-dark',
+        fontSize: 14,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+        lineNumbers: 'on',
+        roundedSelection: false,
+        scrollbar: {
+            useShadows: false,
+            vertical: 'visible',
+            horizontal: 'visible'
+        },
+        tabSize: 4,
+        insertSpaces: true
+    });
+
+    // Add Ctrl+Enter to run code
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function() {
+        runCode();
+    });
+});
+
 // Python code execution using Skulpt
 function outf(text) {
     const output = document.getElementById("output");
@@ -184,9 +227,15 @@ function builtinRead(x) {
 }
 
 function runCode() {
-    const code = document.getElementById("code-editor").value;
+    if (!editor) {
+        alert("Editor is still loading, please wait...");
+        return;
+    }
+
+    const code = editor.getValue();
     const output = document.getElementById("output");
-    output.textContent = "Running...\n";
+    output.textContent = "🏃 Running your code...\n";
+    output.style.color = "#10b981";
 
     Sk.pre = "output";
     Sk.configure({
@@ -200,22 +249,27 @@ function runCode() {
     });
 
     myPromise.then(function(mod) {
-        output.textContent = output.textContent.replace("Running...\n", "");
-        if (output.textContent === "") {
-            output.textContent = "✅ Code executed successfully (no output)";
+        output.textContent = output.textContent.replace("🏃 Running your code...\n", "");
+        if (output.textContent.trim() === "") {
+            output.textContent = "✅ Code executed successfully!\n(No output to display)";
+            output.style.color = "#10b981";
+        } else {
+            output.style.color = "#10b981";
         }
     }, function(err) {
-        output.textContent = "❌ Error:\n" + err.toString();
+        output.textContent = "❌ Error:\n\n" + err.toString();
+        output.style.color = "#ef4444";
     });
 }
 
-const starterCode = `{{ exercise.starter_code|safe }}`;
-
 function resetCode() {
-    document.getElementById("code-editor").value = starterCode;
-    document.getElementById("output").textContent = "";
+    if (editor) {
+        editor.setValue(starterCode);
+        document.getElementById("output").textContent = "";
+    }
 }
 
+// Hints functionality
 let currentHint = 0;
 const totalHints = {{ exercise.hints|length }};
 
@@ -226,48 +280,54 @@ function showNextHint() {
 
         if (currentHint >= totalHints) {
             document.getElementById('hint-btn').disabled = true;
-            document.getElementById('hint-btn').textContent = 'All hints shown';
+            document.getElementById('hint-btn').textContent = '✅ All hints shown';
             document.getElementById('hint-btn').classList.add('opacity-50', 'cursor-not-allowed');
         } else {
-            document.getElementById('hint-btn').textContent = `Show Next Hint (${totalHints - currentHint} remaining)`;
+            document.getElementById('hint-btn').textContent = `💡 Show Next Hint (${totalHints - currentHint} remaining)`;
         }
     }
 }
 
+// Solution functionality
 let solutionShown = false;
 
 function showSolution() {
     if (!solutionShown) {
-        if (confirm("Are you sure? It's better to try solving it yourself first!")) {
+        if (confirm("⚠️ Are you sure? It's better to try solving it yourself first!\n\nTry using the hints before viewing the solution.")) {
+            // Show solution card
             document.getElementById('solution-card').style.display = 'block';
             document.getElementById('show-solution-btn').style.display = 'none';
             solutionShown = true;
+
+            // Initialize solution editor
+            require(['vs/editor/editor.main'], function() {
+                solutionEditor = monaco.editor.create(document.getElementById('solution-editor'), {
+                    value: solutionCode,
+                    language: 'python',
+                    theme: 'vs-dark',
+                    fontSize: 14,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    lineNumbers: 'on',
+                    readOnly: true,
+                    scrollbar: {
+                        useShadows: false,
+                        vertical: 'visible',
+                        horizontal: 'visible'
+                    }
+                });
+            });
         }
     }
 }
 
 function copySolution() {
-    const solution = document.getElementById('solution-code').value;
-    navigator.clipboard.writeText(solution);
-    alert('Solution copied to clipboard!');
+    if (solutionEditor) {
+        const solution = solutionEditor.getValue();
+        navigator.clipboard.writeText(solution);
+        alert('✅ Solution copied to clipboard!');
+    }
 }
-
-// Keyboard shortcuts
-document.getElementById('code-editor').addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + Enter to run code
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        runCode();
-    }
-
-    // Tab key to insert 4 spaces
-    if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = this.selectionStart;
-        const end = this.selectionEnd;
-        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
-        this.selectionStart = this.selectionEnd = start + 4;
-    }
-});
 </script>
 {% endblock %}

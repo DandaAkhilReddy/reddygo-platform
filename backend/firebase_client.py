@@ -22,25 +22,43 @@ def initialize_firebase():
     global _firebase_app, _firestore_client
 
     if _firebase_app is None:
-        # Get Firebase credentials from environment
-        firebase_creds = {
-            "type": "service_account",
-            "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-            "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
-            "private_key": os.getenv("FIREBASE_PRIVATE_KEY", "").replace("\\n", "\n"),
-            "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-            "client_id": os.getenv("FIREBASE_CLIENT_ID"),
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": os.getenv("FIREBASE_CERT_URL")
-        }
+        try:
+            # Check if firebase-credentials.json exists
+            creds_file = "firebase-credentials.json"
+            if os.path.exists(creds_file):
+                print(f"🔥 Using Firebase credentials file: {creds_file}")
+                cred = credentials.Certificate(creds_file)
+            else:
+                # Fall back to environment variables
+                print("🔥 Using Firebase credentials from environment variables")
+                firebase_creds = {
+                    "type": "service_account",
+                    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+                    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+                    "private_key": os.getenv("FIREBASE_PRIVATE_KEY", "").replace("\\n", "\n"),
+                    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+                    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                    "client_x509_cert_url": os.getenv("FIREBASE_CERT_URL")
+                }
 
-        cred = credentials.Certificate(firebase_creds)
-        _firebase_app = firebase_admin.initialize_app(cred)
-        _firestore_client = firestore.client()
+                # Validate required fields
+                if not all([firebase_creds["project_id"], firebase_creds["private_key"], firebase_creds["client_email"]]):
+                    raise ValueError("Missing required Firebase credentials in environment variables")
 
-        print("🔥 Firebase initialized successfully")
+                cred = credentials.Certificate(firebase_creds)
+
+            _firebase_app = firebase_admin.initialize_app(cred)
+            _firestore_client = firestore.client()
+
+            print("✅ Firebase initialized successfully")
+        except Exception as e:
+            print(f"⚠️  Firebase initialization failed: {e}")
+            print("   App will continue without Firebase (some features may not work)")
+            _firebase_app = "disabled"  # Mark as disabled to avoid retry
+            _firestore_client = None
 
     return _firestore_client
 

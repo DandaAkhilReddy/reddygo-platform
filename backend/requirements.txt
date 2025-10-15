@@ -2,14 +2,14 @@
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
 python-dotenv==1.0.0
-pydantic==2.5.3
-pydantic-settings==2.1.0
+pydantic==2.7.3
+pydantic-settings==2.3.0
 
 # Database - Firebase
 firebase-admin==6.4.0
 
 # OpenAI and AI
-openai==1.10.0
+openai==1.33.0
 httpx==0.26.0
 
 # Temporal workflow
@@ -36,3 +36,10 @@ mem0ai==0.1.5
 # End-to-End Encryption
 PyNaCl==1.5.0
 argon2-cffi==23.1.0
+
+# Photo Steganography and Image Processing
+Pillow==10.2.0
+piexif==1.1.3
+
+# Additional Cryptography for Digital Signatures
+cryptography==42.0.0

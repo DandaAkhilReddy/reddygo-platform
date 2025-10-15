@@ -27,6 +27,8 @@ wheels/
 .env
 .env.local
 .env.production
+backend/.env
+backend/firebase-credentials.json
 
 # IDEs
 .vscode/

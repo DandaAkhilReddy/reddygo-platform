@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Day {{ day }} - ReddyGo ML Bootcamp{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Lesson Header -->
+    <div class="bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl shadow-xl p-8 text-white mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-sm font-semibold mb-2">Day {{ day }} of 10</div>
+                <h1 class="text-4xl font-bold mb-2">
+                    {% if day == 1 %}Python + NumPy Essentials
+                    {% elif day == 2 %}Pandas & Data Preprocessing
+                    {% elif day == 3 %}Machine Learning Foundations
+                    {% elif day == 4 %}Advanced ML Algorithms
+                    {% elif day == 5 %}Deep Learning - Part 1
+                    {% elif day == 6 %}Deep Learning - Part 2
+                    {% elif day == 7 %}Computer Vision
+                    {% elif day == 8 %}Natural Language Processing
+                    {% elif day == 9 %}Production ML & MLOps
+                    {% elif day == 10 %}Final Exam & Certification
+                    {% endif %}
+                </h1>
+                <p class="text-gray-100">Theory • Coding • Project • Exam</p>
+            </div>
+            <div class="text-right">
+                <div class="text-sm mb-1">Duration</div>
+                <div class="text-3xl font-bold">7 hours</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white rounded-xl shadow-lg mb-8">
+        <div class="flex border-b">
+            <button onclick="showTab('theory')"
+                    class="tab-btn flex-1 px-6 py-4 font-semibold text-purple-600 border-b-2 border-purple-600">
+                Theory & Concepts
+            </button>
+            <button onclick="showTab('practice')"
+                    class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-500 hover:text-purple-600">
+                Practice Exercises
+            </button>
+            <button onclick="showTab('project')"
+                    class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-500 hover:text-purple-600">
+                ReddyGo Project
+            </button>
+        </div>
+
+        <!-- Theory Tab -->
+        <div id="theory-tab" class="tab-content p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Learning Objectives</h2>
+
+            {% if day == 1 %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="p-6 bg-purple-50 rounded-lg">
+                    <h3 class="font-bold text-lg mb-3 text-purple-800">Morning: Python Crash Course</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>• Variables, data types, collections</li>
+                        <li>• Control flow and loops</li>
+                        <li>• Functions and modules</li>
+                        <li>• File I/O basics</li>
+                    </ul>
+                </div>
+                <div class="p-6 bg-blue-50 rounded-lg">
+                    <h3 class="font-bold text-lg mb-3 text-blue-800">Afternoon: NumPy Deep Dive</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>• Array creation and manipulation</li>
+                        <li>• Broadcasting and vectorization</li>
+                        <li>• Mathematical operations</li>
+                        <li>• Array indexing and slicing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="prose max-w-none">
+                <h3>Python Fundamentals</h3>
+                <p>Python is the most popular language for ML/AI. Let's start with the essentials...</p>
+
+                <h4>Variables and Data Types</h4>
+                <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code># Variables
+name = "ReddyGo"
+users = 1000
+pace = 5.5
+
+# Collections
+distances = [5.0, 10.2, 3.5, 8.1]
+user = {"id": 1, "name": "Akhil", "distance": 42.5}</code></pre>
+
+                <h4>NumPy Arrays</h4>
+                <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code>import numpy as np
+
+# Create arrays
+arr = np.array([1, 2, 3, 4, 5])
+matrix = np.array([[1, 2], [3, 4]])
+
+# Vectorized operations (FAST!)
+distances = np.array([5.0, 10.2, 3.5, 8.1])
+paces = np.array([5.5, 4.8, 6.2, 5.0])
+times = distances * paces  # Element-wise multiplication</code></pre>
+            </div>
+            {% elif day == 2 %}
+            <div class="prose max-w-none">
+                <h3>Pandas for Data Manipulation</h3>
+                <p>Pandas is the go-to library for data analysis in Python.</p>
+
+                <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code>import pandas as pd
+
+# Load data
+df = pd.read_csv('workouts.csv')
+
+# Data exploration
+print(df.head())
+print(df.describe())
+
+# Data cleaning
+df = df.dropna()  # Remove missing values
+df = df[df['distance'] > 0]  # Filter data</code></pre>
+            </div>
+            {% else %}
+            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="text-yellow-800">📚 Content for Day {{ day }} is being prepared. Check back soon!</p>
+            </div>
+            {% endif %}
+
+            <div class="mt-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Recommended Resources</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="#" class="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                        <div class="font-semibold text-purple-600">📹 Video Tutorial</div>
+                        <div class="text-sm text-gray-600">Introduction to Python for ML</div>
+                    </a>
+                    <a href="#" class="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                        <div class="font-semibold text-purple-600">📖 Reading Material</div>
+                        <div class="text-sm text-gray-600">NumPy Official Documentation</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Tab -->
+        <div id="practice-tab" class="tab-content p-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Practice Exercises</h2>
+            <p class="text-gray-600 mb-6">Complete these 10 exercises to master today's concepts:</p>
+
+            <div class="space-y-4">
+                {% for i in range(1, 11) %}
+                <div class="p-6 bg-gray-50 rounded-lg hover:shadow-md transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">Exercise {{ i }}</h3>
+                            <p class="text-gray-600 text-sm mt-1">Practice problem {{ i }} for Day {{ day }}</p>
+                        </div>
+                        <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition">
+                            Start
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Project Tab -->
+        <div id="project-tab" class="tab-content p-8 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">ReddyGo Project</h2>
+
+            {% if day == 1 %}
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Build Distance Calculator</h3>
+                <p class="text-gray-600 mb-4">
+                    Create a GPS distance calculator for ReddyGo using NumPy. This will calculate distances between GPS coordinates.
+                </p>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h4 class="font-bold text-blue-800 mb-3">Requirements:</h4>
+                    <ul class="space-y-2 text-blue-700">
+                        <li>✓ Accept GPS coordinates (latitude, longitude)</li>
+                        <li>✓ Calculate distance using Haversine formula</li>
+                        <li>✓ Use NumPy for vectorized calculations</li>
+                        <li>✓ Handle multiple coordinate pairs</li>
+                    </ul>
+                </div>
+
+                <div class="mt-6">
+                    <pre class="bg-gray-900 text-white p-4 rounded-lg overflow-x-auto"><code># Starter code
+import numpy as np
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate distance between two GPS points
+    using Haversine formula
+    """
+    # TODO: Implement this
+    pass
+
+# Test
+start = (17.385, 78.486)  # Hyderabad
+end = (17.400, 78.500)
+distance = calculate_distance(*start, *end)
+print(f"Distance: {distance:.2f} km")</code></pre>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="text-yellow-800">Project details for Day {{ day }} coming soon!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Take Exam CTA -->
+    <div class="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-xl p-8 text-white text-center mb-8">
+        <h2 class="text-2xl font-bold mb-2">Ready to Test Your Knowledge?</h2>
+        <p class="mb-6">Take the 10-question exam for Day {{ day }}</p>
+        <a href="/exam/{{ day }}"
+           class="inline-block px-8 py-3 bg-white text-green-600 font-bold rounded-lg hover:bg-gray-100 transition">
+            Take Day {{ day }} Exam
+        </a>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex justify-between items-center">
+        {% if day > 1 %}
+        <a href="/day/{{ day - 1 }}"
+           class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition">
+            ← Previous Day
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        <a href="/" class="text-purple-600 hover:text-purple-700 font-semibold">
+            Back to Dashboard
+        </a>
+
+        {% if day < 10 %}
+        <a href="/day/{{ day + 1 }}"
+           class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition">
+            Next Day →
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+
+    // Remove active styling from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-purple-600', 'border-b-2', 'border-purple-600');
+        btn.classList.add('text-gray-500');
+    });
+
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+    // Add active styling to clicked button
+    event.target.classList.remove('text-gray-500');
+    event.target.classList.add('text-purple-600', 'border-b-2', 'border-purple-600');
+}
+</script>
+{% endblock %}

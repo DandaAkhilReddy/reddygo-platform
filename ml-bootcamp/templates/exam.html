@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Day {{ day }} Exam - ReddyGo ML Bootcamp{% endblock %}
+
+{% block extra_head %}
+<style>
+    .question-card {
+        transition: all 0.3s ease;
+    }
+
+    .question-card.answered {
+        background-color: #f0fdf4;
+        border-color: #86efac;
+    }
+
+    .option-label {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .option-label:hover {
+        background-color: #f3f4f6;
+        transform: translateX(5px);
+    }
+
+    .option-input:checked + .option-label {
+        background-color: #ddd6fe;
+        border-color: #8b5cf6;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Exam Header -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Day {{ day }} Exam</h1>
+                <p class="text-gray-600 mt-2">{{ exam.title }}</p>
+            </div>
+            <div class="text-right">
+                <div class="text-sm text-gray-500">Questions</div>
+                <div class="text-3xl font-bold text-purple-600">
+                    <span id="answered-count">0</span>/{{ exam.questions|length }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-200 rounded-full h-3">
+            <div id="progress-bar"
+                 class="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-300"
+                 style="width: 0%">
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 class="font-semibold text-blue-800 mb-2">Instructions:</h3>
+            <ul class="text-sm text-blue-700 space-y-1">
+                <li>• Answer all 10 questions</li>
+                <li>• Passing score: 70% (7/10 correct)</li>
+                <li>• You can review and change answers before submitting</li>
+                <li>• Take your time and read each question carefully</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Questions -->
+    <form id="exam-form">
+        {% for question in exam.questions %}
+        <div class="question-card bg-white rounded-xl shadow-md p-6 mb-6" data-question="{{ loop.index0 }}">
+            <div class="flex items-start mb-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                    <span class="text-purple-600 font-bold">{{ loop.index }}</span>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ question.question }}</h3>
+                    {% if question.code %}
+                    <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 overflow-x-auto"><code class="text-sm">{{ question.code }}</code></pre>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="ml-14 space-y-3">
+                {% for option in question.options %}
+                <div class="relative">
+                    <input type="radio"
+                           id="q{{ loop.index0 }}_opt{{ loop.index0 }}"
+                           name="question_{{ loop.index0 }}"
+                           value="{{ loop.index0 }}"
+                           class="option-input absolute opacity-0"
+                           onchange="updateProgress()">
+                    <label for="q{{ loop.index0 }}_opt{{ loop.index0 }}"
+                           class="option-label block p-4 border-2 border-gray-200 rounded-lg">
+                        <span class="font-semibold text-purple-600 mr-2">{{ ['A', 'B', 'C', 'D'][loop.index0] }}.</span>
+                        <span class="text-gray-700">{{ option }}</span>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+
+    <!-- Submit Button -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-600">Answered: <span id="answered-text" class="font-bold">0</span>/{{ exam.questions|length }}</p>
+                <p class="text-sm text-gray-500 mt-1">Make sure you've answered all questions</p>
+            </div>
+            <button type="button"
+                    id="submit-btn"
+                    onclick="submitExam()"
+                    class="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                Submit Exam
+            </button>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mb-8">
+        <a href="/" class="text-purple-600 hover:text-purple-700 font-semibold">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Results Modal -->
+<div id="results-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div id="results-content"></div>
+    </div>
+</div>
+
+<script>
+const totalQuestions = {{ exam.questions|length }};
+
+function updateProgress() {
+    const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+    const percentage = (answered / totalQuestions) * 100;
+
+    document.getElementById('answered-count').textContent = answered;
+    document.getElementById('answered-text').textContent = answered;
+    document.getElementById('progress-bar').style.width = percentage + '%';
+
+    // Enable submit button if all answered
+    document.getElementById('submit-btn').disabled = answered < totalQuestions;
+
+    // Highlight answered questions
+    document.querySelectorAll('.question-card').forEach((card, index) => {
+        const input = document.querySelector(`input[name="question_${index}"]:checked`);
+        if (input) {
+            card.classList.add('answered');
+        } else {
+            card.classList.remove('answered');
+        }
+    });
+}
+
+async function submitExam() {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Grading...';
+
+    // Collect answers
+    const answers = {};
+    for (let i = 0; i < totalQuestions; i++) {
+        const selected = document.querySelector(`input[name="question_${i}"]:checked`);
+        if (selected) {
+            answers[i] = parseInt(selected.value);
+        }
+    }
+
+    try {
+        const response = await fetch('/submit_exam/{{ day }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ answers })
+        });
+
+        const result = await response.json();
+        showResults(result);
+    } catch (error) {
+        alert('Error submitting exam: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Submit Exam';
+    }
+}
+
+function showResults(result) {
+    const passed = result.passed;
+    const score = result.score.toFixed(1);
+
+    let html = `
+        <div class="p-8">
+            <div class="text-center mb-6">
+                <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center ${passed ? 'bg-green-100' : 'bg-red-100'}">
+                    ${passed ?
+                        '<svg class="w-16 h-16 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>' :
+                        '<svg class="w-16 h-16 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>'
+                    }
+                </div>
+                <h2 class="text-3xl font-bold ${passed ? 'text-green-600' : 'text-red-600'} mb-2">
+                    ${passed ? 'Congratulations!' : 'Keep Trying!'}
+                </h2>
+                <p class="text-gray-600 text-lg">
+                    Your Score: <span class="font-bold text-2xl">${score}%</span>
+                </p>
+                <p class="text-gray-500">
+                    ${result.correct} out of ${result.total} correct
+                </p>
+            </div>
+
+            ${passed ?
+                '<div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6"><p class="text-green-800 text-center font-semibold">You passed! Continue to the next day.</p></div>' :
+                '<div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"><p class="text-red-800 text-center font-semibold">You need 70% to pass. Review the material and try again.</p></div>'
+            }
+
+            <div class="space-y-4 mb-6">
+                <h3 class="font-bold text-lg text-gray-800">Question Review:</h3>
+                ${result.results.map((r, i) => `
+                    <div class="p-4 rounded-lg ${r.correct ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold">Question ${r.question_num}</span>
+                            <span class="${r.correct ? 'text-green-600' : 'text-red-600'} font-bold">
+                                ${r.correct ? 'Correct ✓' : 'Incorrect ✗'}
+                            </span>
+                        </div>
+                        ${!r.correct ? `
+                            <div class="text-sm text-gray-600 mt-2">
+                                <p>Your answer: <span class="font-semibold">${['A', 'B', 'C', 'D'][r.user_answer]}</span></p>
+                                <p>Correct answer: <span class="font-semibold text-green-600">${['A', 'B', 'C', 'D'][r.correct_answer]}</span></p>
+                                ${r.explanation ? `<p class="mt-2 italic">${r.explanation}</p>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="flex space-x-4">
+                <a href="/" class="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white text-center font-semibold rounded-lg transition">
+                    Back to Dashboard
+                </a>
+                ${passed && {{ day }} < 10 ? `
+                    <a href="/day/{{ day + 1 }}" class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white text-center font-semibold rounded-lg transition">
+                        Next Day →
+                    </a>
+                ` : `
+                    <button onclick="location.reload()" class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white text-center font-semibold rounded-lg transition">
+                        Retry Exam
+                    </button>
+                `}
+            </div>
+        </div>
+    `;
+
+    document.getElementById('results-content').innerHTML = html;
+    document.getElementById('results-modal').classList.remove('hidden');
+    document.getElementById('results-modal').classList.add('flex');
+}
+</script>
+{% endblock %}

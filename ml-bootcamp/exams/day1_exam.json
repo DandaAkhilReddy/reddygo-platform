@@ -1,0 +1,122 @@
+{
+  "title": "Python + NumPy Fundamentals",
+  "day": 1,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "Which of the following is the correct way to create a list in Python?",
+      "options": [
+        "list = (1, 2, 3)",
+        "list = [1, 2, 3]",
+        "list = {1, 2, 3}",
+        "list = <1, 2, 3>"
+      ],
+      "correct_answer": 1,
+      "explanation": "Lists in Python are created using square brackets []. Parentheses () create tuples, curly braces {} create sets or dictionaries."
+    },
+    {
+      "question": "What will be the output of: print(type(5.0))?",
+      "code": "x = 5.0\nprint(type(x))",
+      "options": [
+        "<class 'int'>",
+        "<class 'float'>",
+        "<class 'str'>",
+        "<class 'decimal'>"
+      ],
+      "correct_answer": 1,
+      "explanation": "5.0 is a floating-point number, so its type is 'float'."
+    },
+    {
+      "question": "What is the result of: 10 // 3?",
+      "options": [
+        "3.33",
+        "3",
+        "4",
+        "3.0"
+      ],
+      "correct_answer": 1,
+      "explanation": "The // operator performs floor division, returning the integer quotient without the decimal part."
+    },
+    {
+      "question": "Which method would you use to add an element to the end of a list?",
+      "options": [
+        "list.add(element)",
+        "list.append(element)",
+        "list.insert(element)",
+        "list.push(element)"
+      ],
+      "correct_answer": 1,
+      "explanation": "The append() method adds an element to the end of a list in Python."
+    },
+    {
+      "question": "What is the primary advantage of NumPy arrays over Python lists?",
+      "options": [
+        "NumPy arrays are easier to create",
+        "NumPy arrays use less memory and are faster for numerical operations",
+        "NumPy arrays can store more data types",
+        "NumPy arrays are mutable while lists are not"
+      ],
+      "correct_answer": 1,
+      "explanation": "NumPy arrays are optimized for numerical computations, using contiguous memory and vectorized operations, making them much faster and more memory-efficient than Python lists."
+    },
+    {
+      "question": "What does the following NumPy code return?",
+      "code": "import numpy as np\narr = np.array([1, 2, 3, 4, 5])\nresult = arr * 2\nprint(result)",
+      "options": [
+        "[1, 2, 3, 4, 5, 1, 2, 3, 4, 5]",
+        "[2, 4, 6, 8, 10]",
+        "Error: cannot multiply array by int",
+        "[3, 4, 5, 6, 7]"
+      ],
+      "correct_answer": 1,
+      "explanation": "NumPy performs element-wise operations. Multiplying an array by 2 multiplies each element by 2."
+    },
+    {
+      "question": "What is the shape of the following NumPy array?",
+      "code": "import numpy as np\narr = np.array([[1, 2, 3], [4, 5, 6]])\nprint(arr.shape)",
+      "options": [
+        "(6,)",
+        "(2, 3)",
+        "(3, 2)",
+        "(2, 3, 1)"
+      ],
+      "correct_answer": 1,
+      "explanation": "The array has 2 rows and 3 columns, so its shape is (2, 3)."
+    },
+    {
+      "question": "Which NumPy function would you use to create an array of zeros?",
+      "options": [
+        "np.empty()",
+        "np.zeros()",
+        "np.null()",
+        "np.zero_array()"
+      ],
+      "correct_answer": 1,
+      "explanation": "np.zeros() creates an array filled with zeros of the specified shape."
+    },
+    {
+      "question": "What is broadcasting in NumPy?",
+      "options": [
+        "A way to send data over a network",
+        "A method to automatically expand arrays of different shapes for element-wise operations",
+        "A function to print array contents",
+        "A way to copy arrays"
+      ],
+      "correct_answer": 1,
+      "explanation": "Broadcasting is NumPy's powerful mechanism for performing operations on arrays of different shapes by automatically expanding them to compatible shapes."
+    },
+    {
+      "question": "What is the result of the following code?",
+      "code": "import numpy as np\narr = np.array([10, 20, 30, 40, 50])\nresult = arr[arr > 25]\nprint(result)",
+      "options": [
+        "[10, 20, 30]",
+        "[30, 40, 50]",
+        "[True, True, True]",
+        "Error: invalid syntax"
+      ],
+      "correct_answer": 1,
+      "explanation": "This is boolean indexing. The condition arr > 25 creates a boolean array, which is used to filter elements, returning only values greater than 25."
+    }
+  ]
+}

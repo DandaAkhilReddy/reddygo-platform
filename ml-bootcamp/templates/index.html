@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ReddyGo ML Bootcamp{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="gradient-bg rounded-2xl shadow-2xl p-8 text-white mb-8">
+    <div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="mb-6 md:mb-0">
+            <h1 class="text-4xl font-bold mb-2">Welcome to ML Bootcamp</h1>
+            <p class="text-xl text-gray-100">Master Machine Learning in 10 Intensive Days</p>
+            <div class="mt-4 flex items-center space-x-4">
+                <div class="px-4 py-2 bg-white bg-opacity-20 rounded-lg">
+                    <span class="text-2xl font-bold">{{ progress.completed_days|length }}</span>
+                    <span class="text-sm ml-2">Days Completed</span>
+                </div>
+                <div class="px-4 py-2 bg-white bg-opacity-20 rounded-lg">
+                    <span class="text-2xl font-bold">{{ (progress.completed_days|length / 10 * 100)|int }}%</span>
+                    <span class="text-sm ml-2">Progress</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Circle -->
+        <div class="relative">
+            <svg class="transform -rotate-90 w-32 h-32">
+                <circle cx="64" cy="64" r="60" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none"/>
+                <circle cx="64" cy="64" r="60"
+                        stroke="white"
+                        stroke-width="8"
+                        fill="none"
+                        stroke-dasharray="{{ 377 }}"
+                        stroke-dashoffset="{{ 377 - (377 * progress.completed_days|length / 10) }}"
+                        class="progress-ring"/>
+            </svg>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                <div class="text-3xl font-bold">{{ (progress.completed_days|length / 10 * 100)|int }}%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Current Day Card -->
+{% if current_day <= 10 %}
+<div class="bg-white rounded-xl shadow-lg p-6 mb-8 border-l-4 border-purple-500">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                {% if current_day < 10 %}
+                    Continue Learning: Day {{ current_day }}
+                {% else %}
+                    Ready for Final Exam!
+                {% endif %}
+            </h2>
+            <p class="text-gray-600">
+                {% if current_day < 10 %}
+                    {{ curriculum[current_day - 1].title }}
+                {% else %}
+                    Complete the 50-question final exam to earn your certificate
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            {% if current_day < 10 %}
+                <a href="/day/{{ current_day }}"
+                   class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition">
+                    Start Day {{ current_day }}
+                </a>
+            {% else %}
+                <a href="/final_exam"
+                   class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">
+                    Take Final Exam
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Curriculum Grid -->
+<h2 class="text-3xl font-bold text-gray-800 mb-6">10-Day Curriculum</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    {% for day in curriculum %}
+    <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover
+                {% if day.day in progress.completed_days %}border-2 border-green-500
+                {% elif day.day == current_day %}border-2 border-purple-500
+                {% endif %}">
+        <!-- Card Header -->
+        <div class="p-6
+                    {% if day.day in progress.completed_days %}bg-green-50
+                    {% elif day.day == current_day %}bg-purple-50
+                    {% else %}bg-gray-50
+                    {% endif %}">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-semibold text-gray-500">Day {{ day.day }}</span>
+                {% if day.day in progress.completed_days %}
+                    <span class="px-2 py-1 bg-green-500 text-white text-xs rounded-full">
+                        Completed
+                    </span>
+                {% elif day.day == current_day %}
+                    <span class="px-2 py-1 bg-purple-500 text-white text-xs rounded-full">
+                        Current
+                    </span>
+                {% else %}
+                    <span class="px-2 py-1 bg-gray-300 text-gray-600 text-xs rounded-full">
+                        Locked
+                    </span>
+                {% endif %}
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">{{ day.title }}</h3>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-6">
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Topics covered:</p>
+                <ul class="space-y-1">
+                    {% for topic in day.topics %}
+                    <li class="text-sm text-gray-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ topic }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="border-t pt-4">
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                    <span>Duration: {{ day.duration }}</span>
+                </div>
+
+                <div class="text-sm text-gray-600 mb-4">
+                    <span class="font-semibold">Project:</span> {{ day.project }}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-2">
+                    {% if day.day <= current_day or day.day in progress.completed_days %}
+                        <a href="/day/{{ day.day }}"
+                           class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-center rounded-lg transition">
+                            View Lesson
+                        </a>
+                        <a href="/exam/{{ day.day }}"
+                           class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-center rounded-lg transition">
+                            Take Exam
+                        </a>
+                    {% else %}
+                        <button disabled
+                                class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 text-center rounded-lg cursor-not-allowed">
+                            Locked
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Score Badge -->
+        {% if day.day in progress.completed_days %}
+        <div class="px-6 pb-6">
+            {% set exam_score = progress.exam_scores.get('day' ~ day.day, {}) %}
+            {% if exam_score %}
+            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-green-800">Exam Score:</span>
+                    <span class="text-lg font-bold text-green-600">
+                        {{ exam_score.score|int }}% ({{ exam_score.correct }}/{{ exam_score.total }})
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-gray-500 text-sm mb-2">Total Progress</div>
+        <div class="text-3xl font-bold text-purple-600">{{ (progress.completed_days|length / 10 * 100)|int }}%</div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-gray-500 text-sm mb-2">Days Completed</div>
+        <div class="text-3xl font-bold text-green-600">{{ progress.completed_days|length }}/10</div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-gray-500 text-sm mb-2">Exams Passed</div>
+        <div class="text-3xl font-bold text-blue-600">{{ progress.exam_scores|length }}</div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="text-gray-500 text-sm mb-2">Average Score</div>
+        {% set avg_score = (progress.exam_scores.values()|map(attribute='score')|sum / progress.exam_scores|length)|int if progress.exam_scores else 0 %}
+        <div class="text-3xl font-bold text-orange-600">{{ avg_score }}%</div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+{% if progress.completed_days|length == 9 %}
+<div class="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-xl p-8 text-white text-center">
+    <h2 class="text-3xl font-bold mb-4">Ready for the Final Challenge?</h2>
+    <p class="text-xl mb-6">You've completed 9 days. Take the final exam to earn your certificate!</p>
+    <a href="/final_exam"
+       class="inline-block px-8 py-4 bg-white text-green-600 font-bold rounded-lg hover:bg-gray-100 transition">
+        Take Final Exam (50 Questions)
+    </a>
+</div>
+{% elif progress.completed_days|length == 10 %}
+<div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-xl p-8 text-white text-center">
+    <h2 class="text-3xl font-bold mb-4">Congratulations! 🎉</h2>
+    <p class="text-xl mb-6">You've completed all 10 days. View your certificate!</p>
+    <a href="/certificate"
+       class="inline-block px-8 py-4 bg-white text-orange-600 font-bold rounded-lg hover:bg-gray-100 transition">
+        View Certificate
+    </a>
+</div>
+{% endif %}
+{% endblock %}

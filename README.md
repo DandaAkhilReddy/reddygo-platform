@@ -109,7 +109,7 @@ Visit http://localhost:8080/docs for interactive API documentation.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete deployment guide.
 
-**Quick Deploy to Fly.io:**
+### Backend Deployment (Fly.io)
 
 ```bash
 # Install Fly CLI
@@ -124,6 +124,43 @@ flyctl launch --no-deploy
 flyctl secrets set SUPABASE_URL="..." SUPABASE_KEY="..." OPENAI_API_KEY="..."
 flyctl deploy
 ```
+
+### Frontend Deployment (Vercel)
+
+**Option 1: Deploy via Vercel Dashboard (Recommended)**
+
+1. Push your code to GitHub
+2. Visit [vercel.com](https://vercel.com) and sign in
+3. Click "Add New Project"
+4. Import your GitHub repository: `DandaAkhilReddy/reddygo-platform`
+5. Vercel will auto-detect Next.js configuration
+6. Add environment variables in Vercel dashboard:
+   - `NEXT_PUBLIC_API_URL` - Your backend API URL (e.g., `https://your-app.fly.dev`)
+   - `NEXT_PUBLIC_FIREBASE_API_KEY` - From Firebase Console
+   - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+   - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+   - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+   - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+   - `NEXT_PUBLIC_FIREBASE_APP_ID`
+   - `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`
+   - `NEXT_PUBLIC_FIREBASE_DATABASE_URL`
+7. Click "Deploy"
+
+**Option 2: Deploy via Vercel CLI**
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+cd frontend
+vercel
+
+# For production deployment
+vercel --prod
+```
+
+The frontend will be live at your Vercel URL (e.g., `https://reddygo-platform.vercel.app`)
 
 ---
 

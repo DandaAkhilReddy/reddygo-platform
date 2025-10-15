@@ -1,0 +1,43 @@
+# Auto-labeler configuration for PRs
+
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: 'frontend/**/*'
+
+backend:
+  - changed-files:
+    - any-glob-to-any-file: 'backend/**/*'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.md'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'backend/requirements.txt'
+
+ci/cd:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**/*'
+      - 'vercel.json'
+      - '.coderabbit.yaml'
+
+mobile:
+  - changed-files:
+    - any-glob-to-any-file: 'mobile/**/*'
+
+agents:
+  - changed-files:
+    - any-glob-to-any-file: 'agents/**/*'
+
+configuration:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '**/*.json'
+      - '**/*.config.*'

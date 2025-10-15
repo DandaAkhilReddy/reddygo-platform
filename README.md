@@ -306,6 +306,39 @@ flake8 backend/
 
 ---
 
+## 🔍 Code Quality & Reviews
+
+### Automated Code Reviews with CodeRabbit
+
+Every pull request is automatically reviewed by **CodeRabbit AI** for:
+
+- Code quality and best practices
+- Security vulnerabilities
+- Performance optimizations
+- Type safety and error handling
+- FastAPI, Next.js, and Firebase-specific recommendations
+
+**Setup CodeRabbit:**
+
+1. Install the [CodeRabbit GitHub App](https://github.com/apps/coderabbitai)
+2. Grant access to this repository
+3. CodeRabbit will automatically review all new PRs
+
+See [CODERABBIT_SETUP.md](CODERABBIT_SETUP.md) for detailed configuration.
+
+### GitHub Actions CI/CD
+
+Our automated checks run on every PR:
+
+- **Frontend Linting:** ESLint + TypeScript checks
+- **Backend Linting:** Ruff (Python linter/formatter)
+- **Security Scanning:** Trivy vulnerability detection
+- **Auto-Labeling:** PRs automatically tagged by affected code
+
+All checks run in parallel for fast feedback. CodeRabbit reviews complement these automated checks with AI-powered insights.
+
+---
+
 ## 📚 Documentation
 
 - [Deployment Guide](DEPLOYMENT.md)

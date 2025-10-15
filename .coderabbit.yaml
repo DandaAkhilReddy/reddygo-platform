@@ -1,23 +1,89 @@
 language: en-US
 early_access: true
+enable_free_tier: true
+
 reviews:
-  profile: chill
+  profile: assertive  # More thorough than "chill"
   request_changes_workflow: false
   high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
   poem: false
   review_status: true
   collapse_walkthrough: false
+
   auto_review:
     enabled: true
     drafts: false
+    base_branches:
+      - master
+      - main
+      - develop
     ignore_title_keywords:
       - WIP
       - DO NOT REVIEW
+      - SKIP REVIEW
+
+  path_filters:
+    - "!**/*.md"  # Skip markdown files for code reviews
+    - "!**/CODERABBIT_SETUP.md"
+    - "!**/package-lock.json"
+    - "!**/yarn.lock"
+
+  path_instructions:
+    - path: "backend/**/*.py"
+      instructions: |
+        - Review for FastAPI best practices
+        - Check async/await usage and potential blocking operations
+        - Verify Pydantic model validation
+        - Look for SQL injection risks with database queries
+        - Ensure proper error handling with try/except blocks
+        - Check for proper type hints
+        - Validate Firebase integration security
+
+    - path: "frontend/**/*.{ts,tsx,js,jsx}"
+      instructions: |
+        - Review for Next.js 15 best practices
+        - Check React hooks usage and dependencies
+        - Verify proper TypeScript types (avoid 'any')
+        - Look for potential XSS vulnerabilities
+        - Check for proper error boundaries
+        - Validate environment variable usage (NEXT_PUBLIC_ prefix)
+        - Ensure proper Firebase client-side security rules
+
+    - path: "**/*.{yml,yaml}"
+      instructions: |
+        - Check for exposed secrets or API keys
+        - Verify GitHub Actions syntax
+        - Review workflow security (pull_request_target usage)
+
   tools:
     shellcheck:
       enabled: true
+
     github-checks:
       enabled: true
       timeout: 5m
+
+    languagetool:
+      enabled: true
+      enabled_only: false
+      level: default
+
+  knowledge_base:
+    enabled: true
+    learnings:
+      scope: auto
+    opt_out: false
+
 chat:
   auto_reply: true
+
+# Language-specific configurations
+python:
+  max_line_length: 100
+
+typescript:
+  max_line_length: 100
+
+javascript:
+  max_line_length: 100

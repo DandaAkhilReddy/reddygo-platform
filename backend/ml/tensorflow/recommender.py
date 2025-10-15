@@ -104,7 +104,7 @@ class RecommenderSystem:
     High-level interface for challenge recommendation
     """
 
-    def __init__(self, model_path: str = "models/recommender"):
+    def __init__(self, model_path: str = "models/recommender.keras"):
         self.model_path = model_path
         self.model = None
         self.user_id_map = {}  # Map user IDs to integers

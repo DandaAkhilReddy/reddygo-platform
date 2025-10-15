@@ -1,520 +1,515 @@
-# 🚀 ReddyGo ML Bootcamp - 10-Day Intensive Machine Learning Program
+# 🚀 ML Bootcamp - Learn Machine Learning in 10 Days
 
-A comprehensive, interactive machine learning bootcamp platform built with Flask, featuring hands-on exercises, auto-graded exams, and persistent progress tracking.
+> **Interactive, Open-Source Machine Learning Bootcamp** - From Python basics to production ML, completely free!
 
-## 🎯 Overview
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-This platform provides a structured 10-day journey from Python fundamentals to production ML, designed with a pedagogical approach for ReddyGo engineers to master ML/AI concepts through practice.
+## ⚡ Quick Start (One Command!)
 
-**Key Features:**
-- 🏃 10 interactive coding exercises per day
-- 📝 110 auto-graded exam questions across 10 days
-- 💾 Persistent progress tracking with SQLite
-- 🎨 Modern UI with TailwindCSS
-- 🐍 Browser-based Python execution using Skulpt.js
-- 📊 Real-time feedback and hints system
-- 🎓 Automatic certificate generation on completion
+### Option 1: Quick Start Script (Recommended)
+
+**macOS / Linux:**
+```bash
+git clone https://github.com/DandaAkhilReddy/reddygo-platform.git
+cd reddygo-platform/ml-bootcamp
+chmod +x quick-start.sh
+./quick-start.sh
+```
+
+**Windows:**
+```cmd
+git clone https://github.com/DandaAkhilReddy/reddygo-platform.git
+cd reddygo-platform\ml-bootcamp
+quick-start.bat
+```
+
+### Option 2: Docker (Even Easier!)
+
+```bash
+git clone https://github.com/DandaAkhilReddy/reddygo-platform.git
+cd reddygo-platform/ml-bootcamp
+docker-compose up
+```
+
+**That's it!** Open your browser to http://localhost:5000 and start learning! 🎓
+
+---
+
+## 🎯 What is ML Bootcamp?
+
+A **completely free, open-source platform** for learning Machine Learning through hands-on practice. No sign-up required - just clone and code!
+
+### ✨ Features
+
+- **🎓 10-Day Structured Curriculum** - Python → NumPy → Pandas → ML → Deep Learning → CV/NLP → MLOps
+- **💻 Interactive Code Editor** - VS Code-like Monaco Editor in your browser
+- **📝 110 Exam Questions** - Auto-graded with detailed explanations
+- **🏃 Practice Exercises** - Hands-on coding challenges with hints
+- **💾 Progress Tracking** - Your progress saved automatically (per browser)
+- **👤 Guest Mode** - No login required, start learning instantly!
+- **🐳 Docker Support** - Run anywhere in one command
+- **📱 Mobile Friendly** - Learn on any device
+- **🎨 Beautiful UI** - Modern, clean design with TailwindCSS
+
+---
 
 ## 📚 Curriculum
 
-### **Day 1: Python + NumPy Fundamentals**
-- Variables, data types, operators
-- Control structures (if/else, loops)
-- Functions and data structures
-- NumPy arrays and operations
-- 10 coding exercises + 10 exam questions
+| Day | Topic | Questions | Exercises |
+|-----|-------|-----------|-----------|
+| **1** | Python + NumPy Fundamentals | 10 | 10 ✅ |
+| **2** | Pandas & Data Preprocessing | 10 | Coming Soon |
+| **3** | Machine Learning Foundations | 10 | Coming Soon |
+| **4** | Advanced ML (Trees, XGBoost) | 10 | Coming Soon |
+| **5** | Deep Learning with PyTorch | 10 | Coming Soon |
+| **6** | CNNs & RNNs | 10 | Coming Soon |
+| **7** | Computer Vision | 10 | Coming Soon |
+| **8** | Natural Language Processing | 10 | Coming Soon |
+| **9** | Production ML & MLOps | 10 | Coming Soon |
+| **10** | Final Comprehensive Exam | 50 | -- |
 
-### **Day 2: Pandas & Data Preprocessing**
-- DataFrames and Series
-- Data cleaning and transformation
-- Handling missing data
-- Feature engineering basics
-- 10 exam questions
+**Total: 110 Questions + Hands-on Exercises**
 
-### **Day 3: Machine Learning Foundations**
-- Supervised vs Unsupervised Learning
-- Train/test split and cross-validation
-- Linear Regression, Logistic Regression
-- Model evaluation metrics
-- Scikit-learn fundamentals
-- 10 exam questions
+---
 
-### **Day 4: Advanced ML Algorithms**
-- Decision Trees
-- Random Forests
-- Gradient Boosting & XGBoost
-- Hyperparameter tuning
-- Feature importance
-- 10 exam questions
+## 🖥️ Screenshots
 
-### **Day 5: Deep Learning with PyTorch - Part 1**
-- Neural network fundamentals
-- PyTorch tensors and autograd
-- Building and training networks
-- Activation functions
-- Backpropagation
-- 10 exam questions
+*Coming soon - Add screenshots of the platform in action!*
 
-### **Day 6: Deep Learning Part 2 - CNNs & RNNs**
-- Convolutional Neural Networks
-- Pooling and feature maps
-- Recurrent Neural Networks
-- LSTMs and sequence modeling
-- Dropout and batch normalization
-- Transfer learning
-- 10 exam questions
+---
 
-### **Day 7: Computer Vision**
-- Image preprocessing
-- Pre-trained models (ResNet, VGG)
-- Object detection
-- Semantic segmentation
-- ImageNet and data augmentation
-- 10 exam questions
+## 🛠️ Manual Installation
 
-### **Day 8: Natural Language Processing**
-- Tokenization and embeddings
-- Transformer architecture
-- BERT and GPT models
-- Hugging Face library
-- Sentiment analysis and NER
-- Attention mechanisms
-- 10 exam questions
-
-### **Day 9: Production ML & MLOps**
-- Model serialization
-- FastAPI deployment
-- Docker containerization
-- MLflow experiment tracking
-- Model monitoring and drift detection
-- CI/CD for ML
-- 10 exam questions
-
-### **Day 10: Final Comprehensive Exam**
-- 50 questions covering all topics
-- Passing score: 80%
-- Certificate awarded on completion
-
-## 🚀 Getting Started
+If you prefer manual setup:
 
 ### Prerequisites
-- Python 3.13+
-- pip package manager
-- Modern web browser
+- Python 3.8 or higher
+- pip (Python package manager)
+- Git
 
-### Installation
+### Step-by-Step Setup
 
 1. **Clone the repository**
-```bash
-cd C:/Users/akhil/reddygo-platform
-cd ml-bootcamp
-```
+   ```bash
+   git clone https://github.com/DandaAkhilReddy/reddygo-platform.git
+   cd reddygo-platform/ml-bootcamp
+   ```
 
 2. **Create virtual environment**
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+   ```bash
+   python -m venv venv
+
+   # Activate:
+   # On macOS/Linux:
+   source venv/bin/activate
+   # On Windows:
+   venv\Scripts\activate
+   ```
 
 3. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. **Initialize database**
+   ```bash
+   python init_db.py
+   ```
+
+5. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+6. **Open in browser**
+   ```
+   http://localhost:5000
+   ```
+
+---
+
+## 🐳 Docker Deployment
+
+### Local Development
 ```bash
-python init_db.py
+docker-compose up
 ```
 
-This creates:
-- SQLite database at `instance/bootcamp.db`
-- Default user account
-- Progress tracking tables
+### Production Deployment
+```bash
+docker-compose -f docker-compose.yml up -d
+```
 
-### Running the Platform
+### Custom Configuration
+Create a `.env` file (copy from `.env.example`):
+```bash
+cp .env.example .env
+# Edit .env with your settings
+```
 
-1. **Start the Flask application**
+---
+
+## 📖 How to Use
+
+### For Learners
+
+1. **Start Day 1** - Click "Start Day 1" on the dashboard
+2. **Complete Exercises** - Work through 10 interactive coding exercises
+3. **Run Your Code** - Press Ctrl+Enter or click "Run Code"
+4. **Use Hints** - Stuck? Progressive hints help you learn
+5. **Take the Exam** - 10 questions to test your knowledge
+6. **Progress** - Pass with 70% to unlock the next day
+7. **Repeat** - Continue through all 10 days
+8. **Get Certified** - Complete final exam (50 questions, 80% required)
+
+### For Developers
+
+Want to add content or features? See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
+
+## 🎓 Learning Path
+
+```
+Day 1: Python Basics
+  ├── Variables & Data Types
+  ├── Control Structures
+  ├── Functions
+  └── NumPy Fundamentals
+
+Day 2: Data Science Essentials
+  ├── Pandas DataFrames
+  ├── Data Cleaning
+  └── Feature Engineering
+
+Day 3-4: Machine Learning
+  ├── scikit-learn
+  ├── Regression & Classification
+  ├── Trees & Forests
+  └── XGBoost
+
+Day 5-6: Deep Learning
+  ├── PyTorch Basics
+  ├── Neural Networks
+  ├── CNNs & RNNs
+  └── LSTMs
+
+Day 7-8: Advanced Topics
+  ├── Computer Vision
+  ├── NLP & Transformers
+  ├── BERT & GPT
+  └── Transfer Learning
+
+Day 9: Production ML
+  ├── Model Deployment
+  ├── Docker
+  ├── MLflow
+  └── Monitoring
+
+Day 10: Final Assessment
+  └── 50-Question Comprehensive Exam
+```
+
+---
+
+## 🤝 Contributing
+
+We ❤️ contributions! Here's how you can help:
+
+- 🐛 **Report Bugs** - Found an issue? Let us know!
+- 💡 **Suggest Features** - Have an idea? Share it!
+- 📝 **Add Content** - Write exercises, lessons, or exam questions
+- 🎨 **Improve UI** - Make it more beautiful
+- 📚 **Write Docs** - Help others understand
+- 🧪 **Add Tests** - Increase reliability
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## 🌟 Why ML Bootcamp?
+
+### For Individuals
+- ✅ **100% Free** - No hidden costs, ever
+- ✅ **Self-Paced** - Learn at your own speed
+- ✅ **No Registration** - Start immediately as a guest
+- ✅ **Hands-On** - Practice coding, not just reading
+- ✅ **Interactive** - Instant feedback on your code
+- ✅ **Complete** - Basics to production in 10 days
+
+### For Organizations
+- ✅ **Train Teams** - Onboard engineers to ML
+- ✅ **Self-Hostable** - Deploy on your infrastructure
+- ✅ **Customizable** - Add your own content
+- ✅ **Open Source** - No vendor lock-in
+- ✅ **MIT Licensed** - Use commercially
+
+### For Educators
+- ✅ **Ready to Use** - No setup required
+- ✅ **Structured** - 10-day curriculum
+- ✅ **Auto-Graded** - Save time on grading
+- ✅ **Trackable** - Monitor student progress
+- ✅ **Extensible** - Add your own content
+
+---
+
+## 🚀 Deployment Options
+
+### Local Development
 ```bash
 python app.py
 ```
 
-2. **Open your browser**
-```
-http://localhost:5000
+### Docker
+```bash
+docker-compose up
 ```
 
-3. **Start learning!**
-   - View your progress dashboard
-   - Navigate through daily lessons
-   - Complete interactive exercises
-   - Take exams and track scores
+### Cloud Platforms
+
+**Heroku:**
+```bash
+git push heroku main
+```
+
+**Railway:**
+```bash
+railway up
+```
+
+**Fly.io:**
+```bash
+fly deploy
+```
+
+**DigitalOcean App Platform:**
+- Connect your GitHub repo
+- It will auto-detect and deploy!
+
+---
 
 ## 📁 Project Structure
 
 ```
 ml-bootcamp/
-├── app.py                      # Flask application entry point
-├── models.py                   # SQLAlchemy database models
-├── requirements.txt            # Python dependencies
-├── instance/
-│   └── bootcamp.db            # SQLite database (auto-created)
-├── templates/
-│   ├── index.html             # Dashboard homepage
-│   ├── lesson.html            # Daily lesson page
-│   ├── practice.html          # Interactive coding environment
-│   ├── exam.html              # Exam interface
-│   └── results.html           # Exam results page
-├── practice/
-│   ├── day1_exercises.py      # Day 1 coding exercises
-│   └── ...                    # Days 2-10 (to be added)
-└── exams/
-    ├── day1_exam.json         # Day 1 exam questions
-    ├── day2_exam.json         # Day 2 exam questions
-    ├── ...
-    └── day10_exam.json        # Final comprehensive exam
+├── app.py                  # Main Flask application
+├── models.py               # Database models (SQLAlchemy)
+├── init_db.py              # Database initialization
+├── requirements.txt        # Python dependencies
+├── quick-start.sh          # Unix one-command setup
+├── quick-start.bat         # Windows one-command setup
+├── Dockerfile              # Docker configuration
+├── docker-compose.yml      # Docker Compose setup
+├── .env.example            # Environment variables template
+│
+├── templates/              # HTML templates (Jinja2)
+│   ├── index.html         # Dashboard
+│   ├── lesson.html        # Lesson pages
+│   ├── practice.html      # Code editor
+│   ├── exam.html          # Exam interface
+│   └── results.html       # Exam results
+│
+├── exams/                  # Exam questions (JSON)
+│   ├── day1_exam.json
+│   ├── ...
+│   └── day10_exam.json
+│
+├── practice/               # Interactive exercises (Python)
+│   ├── day1_exercises.py
+│   └── ...
+│
+├── lessons/                # Lesson content (Markdown)
+│   ├── day1.md
+│   └── ...
+│
+└── static/                 # CSS, JS, images
+    └── ...
 ```
-
-## 🎓 How It Works
-
-### Interactive Practice System
-
-1. **Exercise Structure**
-Each exercise includes:
-```python
-{
-    "id": 1,
-    "title": "Distance Calculator",
-    "description": "Calculate total distance and average",
-    "difficulty": "Easy",
-    "instructions": "Detailed problem description...",
-    "starter_code": "# Initial code template",
-    "solution": "# Complete solution",
-    "expected_output": "Expected result format",
-    "hints": ["Hint 1", "Hint 2", "Hint 3"],
-    "explanation": "Learning objectives"
-}
-```
-
-2. **Browser Python Execution**
-- Uses Skulpt.js to run Python code in-browser
-- No server-side execution needed
-- Instant feedback on code output
-- Safe sandboxed environment
-
-3. **Progressive Hints**
-- 3 hints per exercise
-- Reveal one at a time
-- Solution available after hints
-
-### Exam System
-
-1. **Exam Format**
-```json
-{
-  "title": "Python + NumPy Fundamentals",
-  "day": 1,
-  "total_questions": 10,
-  "passing_score": 70,
-  "questions": [
-    {
-      "question": "Question text",
-      "options": ["A", "B", "C", "D"],
-      "correct_answer": 1,
-      "explanation": "Why this is correct"
-    }
-  ]
-}
-```
-
-2. **Auto-Grading**
-- Immediate results after submission
-- Detailed explanations for each answer
-- Pass/fail determination (70% threshold)
-- Progress saved to database
-
-3. **Progress Tracking**
-- Current day and completed days
-- Exam scores and timestamps
-- Overall completion percentage
-- Certificate eligibility
-
-## 💾 Database Schema
-
-### User Model
-```python
-- id: Integer (Primary Key)
-- username: String (unique)
-- progress: Relationship → Progress
-- exam_results: Relationship → ExamResult[]
-```
-
-### Progress Model
-```python
-- id: Integer (Primary Key)
-- user_id: Foreign Key → User
-- current_day: Integer (1-10)
-- completed_days: JSON Array
-```
-
-### ExamResult Model
-```python
-- id: Integer (Primary Key)
-- user_id: Foreign Key → User
-- day: Integer (1-10)
-- score: Float (0-100)
-- correct: Integer
-- total: Integer
-- passed: Boolean
-- timestamp: DateTime
-```
-
-## 🛠️ Technical Stack
-
-**Backend:**
-- Flask 3.0.0 - Web framework
-- SQLAlchemy 2.0.44 - ORM and database
-- SQLite - Embedded database
-
-**Frontend:**
-- TailwindCSS (CDN) - Styling
-- Skulpt.js - Python interpreter in browser
-- Vanilla JavaScript - Interactivity
-
-**Python:**
-- Python 3.13
-- Jinja2 - Template engine
-
-## 📊 Features in Detail
-
-### 1. Progress Dashboard
-- Visual progress cards for all 10 days
-- Color-coded status (locked, current, completed)
-- Quick stats: completed days, current day, total exams
-- Direct navigation to lessons and exams
-
-### 2. Interactive Coding Environment
-- Syntax-highlighted code editor
-- Run button for instant execution
-- Output console with error handling
-- Progressive hint system
-- Solution viewer
-- Reset code functionality
-
-### 3. Exam Interface
-- Clean multiple-choice format
-- Real-time answer selection
-- Timed completion (optional)
-- Submit with confirmation
-- Detailed results with explanations
-
-### 4. Results & Analytics
-- Score percentage and pass/fail status
-- Question-by-question breakdown
-- Correct answers highlighted
-- Explanations for learning
-- Retake option available
-
-### 5. Certificate System
-- Auto-generated on Day 10 completion
-- Requires 80% on final exam
-- Downloadable PDF (future enhancement)
-- Shareable credential
-
-## 🔧 Configuration
-
-### Flask Configuration
-```python
-# app.py
-app.config['SECRET_KEY'] = 'your-secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/bootcamp.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-```
-
-### Exam Thresholds
-```python
-# Default passing scores
-DAY_1_9_PASSING = 70  # 70% for daily exams
-DAY_10_PASSING = 80   # 80% for final exam
-```
-
-## 🧪 Testing
-
-### Test All Exams
-```bash
-cd ml-bootcamp
-python -c "
-import json
-for day in range(1, 11):
-    with open(f'exams/day{day}_exam.json') as f:
-        exam = json.load(f)
-        print(f'Day {day}: {exam[\"title\"]} - {len(exam[\"questions\"])} questions')
-"
-```
-
-### Validate Database
-```bash
-python -c "
-from app import app, db
-with app.app_context():
-    db.create_all()
-    print('Database tables created successfully!')
-"
-```
-
-## ✅ Completion Status
-
-**Fully Implemented:**
-- ✅ Complete 10-day curriculum defined
-- ✅ All 10 exam files created (110 questions total)
-- ✅ Interactive practice system (Day 1: 10 exercises)
-- ✅ Database persistence with SQLAlchemy
-- ✅ Progress tracking and analytics
-- ✅ Auto-grading system
-- ✅ Modern TailwindCSS UI
-- ✅ Certificate generation logic
-
-**In Progress:**
-- ⏳ Practice exercises for Days 2-10
-- ⏳ Detailed lesson content (markdown)
-- ⏳ Jupyter notebook versions
-
-## 🚧 Future Enhancements
-
-### Planned Features
-- [ ] PDF certificate generation
-- [ ] Email notifications for progress
-- [ ] Code quality checks (linting)
-- [ ] Collaborative coding sessions
-- [ ] Leaderboards and badges
-- [ ] Mobile-responsive improvements
-- [ ] Dark mode toggle
-- [ ] Export progress reports
-- [ ] ReddyGo-specific case studies
-- [ ] Video tutorials integration
-
-### Advanced Features
-- [ ] AI code review feedback
-- [ ] Personalized learning paths
-- [ ] Adaptive difficulty
-- [ ] Peer code review system
-- [ ] Integration with ReddyGo production data
-- [ ] Real-time multiplayer challenges
-
-## 📖 Learning Methodology
-
-This bootcamp follows evidence-based learning principles:
-
-1. **Deliberate Practice**: Hands-on coding exercises before theory
-2. **Immediate Feedback**: Instant validation of code and answers
-3. **Spaced Repetition**: Progressive difficulty across days
-4. **Active Recall**: Exam questions test understanding
-5. **Scaffolding**: Hints system supports struggling learners
-6. **Real-World Application**: ReddyGo-focused projects
-
-## 🤝 Contributing
-
-We welcome contributions! Areas for improvement:
-
-1. **Content**: Additional exercises, better explanations
-2. **Features**: UI improvements, new functionality
-3. **Bug Fixes**: Report issues on GitHub
-4. **Documentation**: Improve guides and examples
-
-### Development Setup
-```bash
-# Fork and clone repo
-git clone https://github.com/DandaAkhilReddy/reddygo-platform.git
-cd reddygo-platform/ml-bootcamp
-
-# Create feature branch
-git checkout -b feature/your-feature-name
-
-# Make changes and test
-python app.py
-
-# Commit and push
-git add .
-git commit -m "feat: your feature description"
-git push origin feature/your-feature-name
-```
-
-## 📝 License
-
-This project is part of the ReddyGo platform. Internal use only.
-
-## 👥 Authors
-
-Built with pedagogical expertise for ReddyGo engineers.
-
-## 🙏 Acknowledgments
-
-- **Skulpt.js** - Browser-based Python execution
-- **TailwindCSS** - Modern utility-first CSS
-- **Flask** - Lightweight web framework
-- **SQLAlchemy** - Powerful ORM
-
-## 📞 Support
-
-For questions or issues:
-- Open an issue on GitHub
-- Contact the ReddyGo engineering team
-- Check documentation at `/docs`
-
-## 🎯 Success Metrics
-
-**Complete Bootcamp Stats:**
-- ✅ 10 days of structured content
-- ✅ 110 exam questions (10 per day + 50 final)
-- ✅ Day 1: 10 interactive coding exercises
-- ⏳ Days 2-10: Exercises coming soon
-- 🎓 Certificate on completion
-
-## 🔥 Quick Start Guide
-
-**First Time Users:**
-1. Install: `pip install -r requirements.txt`
-2. Initialize DB: `python init_db.py`
-3. Start app: `python app.py`
-4. Open http://localhost:5000
-5. Click "Start Day 1"
-6. Complete 10 coding exercises
-7. Take the Day 1 exam (70% to pass)
-8. Progress to Day 2
-9. Repeat until Day 10
-10. Pass final exam (80% threshold)
-11. Receive certificate!
-
-**Daily Workflow:**
-```
-1. Read lesson overview
-2. Complete practice exercises (use hints if stuck)
-3. Review solutions and explanations
-4. Take the exam
-5. Review incorrect answers
-6. Move to next day (unlocked after passing exam)
-```
-
-## 📊 Exam Coverage
-
-| Day | Topic | Questions | Pass % |
-|-----|-------|-----------|--------|
-| 1 | Python + NumPy | 10 | 70% |
-| 2 | Pandas & Preprocessing | 10 | 70% |
-| 3 | ML Foundations | 10 | 70% |
-| 4 | Advanced ML | 10 | 70% |
-| 5 | PyTorch Basics | 10 | 70% |
-| 6 | CNNs & RNNs | 10 | 70% |
-| 7 | Computer Vision | 10 | 70% |
-| 8 | NLP | 10 | 70% |
-| 9 | Production ML | 10 | 70% |
-| 10 | Final Comprehensive | 50 | 80% |
-
-**Total: 110 questions across all assessments**
 
 ---
 
-**Built with ❤️ for ReddyGo Engineers**
+## 🔧 Configuration
 
-*Master ML in 10 days. Ship AI features with confidence.*
+### Environment Variables
 
-Start your journey: http://localhost:5000
+Copy `.env.example` to `.env` and customize:
+
+```bash
+# Flask Configuration
+SECRET_KEY=your-secret-key-here
+FLASK_ENV=development
+
+# Database
+DATABASE_URL=sqlite:///instance/bootcamp.db
+
+# Server
+HOST=0.0.0.0
+PORT=5000
+```
+
+### Guest User System
+
+By default, each browser gets a unique guest ID. No authentication needed!
+
+**How it works:**
+- First visit → Unique guest ID generated
+- Progress saved per guest ID
+- Persistent across browser sessions
+- No personal data collected
+
+**To reset your progress:**
+- Clear browser cookies
+- Or use a different browser/incognito mode
+
+---
+
+## 📊 Features in Detail
+
+### 1. Interactive Code Editor
+- **Monaco Editor** (VS Code's editor)
+- Syntax highlighting for Python
+- Line numbers and auto-indentation
+- Keyboard shortcuts (Ctrl+Enter to run)
+- Dark theme for better readability
+
+### 2. Auto-Graded Exams
+- 110 questions across 10 days
+- Multiple choice format
+- Instant results with explanations
+- 70% passing score (80% for final)
+- Progress saved automatically
+
+### 3. Practice System
+- 10 coding exercises for Day 1
+- Starter code provided
+- Progressive hints (3 per exercise)
+- Solution with explanation
+- Expected output shown
+- Code runs in browser (Skulpt.js)
+
+### 4. Progress Tracking
+- SQLite database (persistent)
+- Guest user system (session-based)
+- Days completed
+- Exam scores history
+- Current day indicator
+- Certificate eligibility
+
+### 5. Certificate Generation
+- Auto-generated on completion
+- Requires 80% on final exam
+- Levels: Outstanding (95%+), Distinction (85%+), Certified (70%+)
+- Downloadable (future: PDF)
+- Shareable
+
+---
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+pytest
+```
+
+### Manual Testing
+1. Start the app: `python app.py`
+2. Open browser: `http://localhost:5000`
+3. Test exercise system
+4. Test exam submission
+5. Check progress tracking
+
+---
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+**TL;DR**: Free to use, modify, and distribute. Even commercially!
+
+---
+
+## 🙏 Acknowledgments
+
+- **Skulpt.js** - Python interpreter in JavaScript
+- **Monaco Editor** - VS Code's amazing code editor
+- **Flask** - Lightweight Python web framework
+- **TailwindCSS** - Utility-first CSS framework
+- **SQLAlchemy** - Python SQL toolkit
+
+---
+
+## 📞 Support & Community
+
+- **Issues**: [GitHub Issues](https://github.com/DandaAkhilReddy/reddygo-platform/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/DandaAkhilReddy/reddygo-platform/discussions)
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Completed
+- [x] Complete 10-day curriculum
+- [x] All 110 exam questions
+- [x] Day 1 interactive exercises
+- [x] Guest user system
+- [x] Docker support
+- [x] One-command setup
+- [x] Progress tracking
+- [x] Auto-grading system
+- [x] Monaco code editor
+- [x] Certificate generation
+
+### 🚧 In Progress
+- [ ] Exercises for Days 2-10
+- [ ] Detailed lesson content
+- [ ] UI improvements
+
+### 📋 Planned
+- [ ] PDF certificate generation
+- [ ] User authentication (optional)
+- [ ] Leaderboards
+- [ ] Social sharing
+- [ ] Mobile app
+- [ ] Video tutorials integration
+- [ ] Jupyter notebook exports
+- [ ] AI code review
+- [ ] Real-time collaboration
+
+---
+
+## 💖 Star History
+
+⭐ **Star this repo** if you find it helpful! It motivates us to keep improving.
+
+---
+
+## 📈 Stats
+
+- **110** Total Exam Questions
+- **10** Interactive Exercises (Day 1)
+- **10** Days of Content
+- **1** Command to Setup
+- **0** Registration Required
+- **100%** Free & Open Source
+
+---
+
+**Made with ❤️ for the ML community**
+
+*Learn ML → Build AI → Change the World* 🚀
+
+---
+
+## ⚡ Get Started Now!
+
+```bash
+git clone https://github.com/DandaAkhilReddy/reddygo-platform.git
+cd reddygo-platform/ml-bootcamp
+./quick-start.sh  # or quick-start.bat on Windows
+```
+
+**Happy Learning!** 🎓✨

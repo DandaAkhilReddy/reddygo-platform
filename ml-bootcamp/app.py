@@ -1,22 +1,40 @@
 """
-ReddyGo ML Bootcamp - Learning Platform
+ML Bootcamp - Interactive Learning Platform
 10-Day Intensive Machine Learning Bootcamp with Daily Exams
+
+Open-source platform for learning ML/AI from basics to production.
 """
 
 from flask import Flask, render_template, request, jsonify, session
 from datetime import datetime
 import json
 import os
+import secrets
 from models import db, User, Progress, ExamResult
 
+# Load environment variables if .env exists
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, use default values
+
 app = Flask(__name__)
-app.secret_key = 'reddygo-ml-bootcamp-2025'
+
+# Configuration from environment variables with sensible defaults
+app.secret_key = os.getenv('SECRET_KEY', secrets.token_hex(32))
+app.config['FLASK_ENV'] = os.getenv('FLASK_ENV', 'development')
+app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'True') == 'True'
 
 # Database configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'bootcamp.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+db_path = os.getenv('DATABASE_URL', f'sqlite:///{os.path.join(basedir, "instance", "bootcamp.db")}')
+app.config['SQLALCHEMY_DATABASE_URI'] = db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Application settings
+app.config['APP_NAME'] = os.getenv('APP_NAME', 'ML Bootcamp')
+app.config['MAX_GUEST_USERS'] = int(os.getenv('MAX_GUEST_USERS', 1000))
 
 # Initialize database
 db.init_app(app)
@@ -30,14 +48,31 @@ def load_exam(day):
             return json.load(f)
     return None
 
-# Get or create default user
+# Get or create guest user based on session
 def get_current_user():
-    """Get the current user (default_user for now, can add auth later)"""
-    user = User.query.filter_by(username='default_user').first()
+    """
+    Get the current user based on session.
+    Creates a unique guest user for each browser/session automatically.
+    No authentication required - instant learning!
+    """
+    # Check if user already has a session ID
+    if 'user_id' not in session:
+        # Generate a unique guest user ID
+        guest_id = f'guest_{secrets.token_hex(8)}'
+        session['user_id'] = guest_id
+        session.permanent = True  # Make session persistent
+
+    user_id = session['user_id']
+
+    # Try to find existing user
+    user = User.query.filter_by(username=user_id).first()
+
     if not user:
-        user = User(username='default_user')
+        # Create new guest user
+        user = User(username=user_id, email=f'{user_id}@guest.local')
         db.session.add(user)
         db.session.commit()
+
     return user
 
 # Load user progress from database
@@ -403,4 +438,22 @@ def reset_progress():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    host = os.getenv('HOST', '0.0.0.0')
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_DEBUG', 'True') == 'True'
+
+    print(f"""
+    ╔═══════════════════════════════════════════════════════════════╗
+    ║                      ML BOOTCAMP SERVER                       ║
+    ║           10-Day Interactive ML Learning Platform             ║
+    ╚═══════════════════════════════════════════════════════════════╝
+
+    🚀 Server running at: http://{host}:{port}
+    📚 Guest Mode: Enabled (No login required!)
+    💾 Database: {app.config['SQLALCHEMY_DATABASE_URI']}
+    🔧 Environment: {app.config['FLASK_ENV']}
+
+    Press Ctrl+C to stop the server
+    """)
+
+    app.run(debug=debug, host=host, port=port)

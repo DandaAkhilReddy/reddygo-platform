@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  ml-bootcamp:
+    build: .
+    container_name: ml-bootcamp
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount instance directory to persist database
+      - ./instance:/app/instance
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-ml-bootcamp-secret-key-change-in-production}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+# Optional: Add nginx reverse proxy for production
+# Uncomment below if you want to use nginx
+
+#  nginx:
+#    image: nginx:alpine
+#    container_name: ml-bootcamp-nginx
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#    depends_on:
+#      - ml-bootcamp
+#    restart: unless-stopped
+
+volumes:
+  instance:
+    driver: local

@@ -187,9 +187,50 @@ def day_lesson(day):
         with open(lesson_path, 'r') as f:
             lesson_content = f.read()
 
+    # Load practice exercises for this day
+    exercises = load_practice_exercises(day)
+
     return render_template('lesson.html',
                          day=day,
                          lesson_content=lesson_content,
+                         exercises=exercises,
+                         progress=progress)
+
+def load_practice_exercises(day):
+    """Load practice exercises for a specific day"""
+    try:
+        # Import the exercises module
+        import sys
+        sys.path.insert(0, 'practice')
+
+        if day == 1:
+            from day1_exercises import exercises
+            return exercises
+        # Add more days as needed
+        return []
+    except:
+        return []
+
+@app.route('/practice/<int:day>/<int:exercise_id>')
+def practice_exercise(day, exercise_id):
+    """Display interactive practice exercise"""
+    if day < 1 or day > 10:
+        return "Invalid day", 404
+
+    if exercise_id < 1 or exercise_id > 10:
+        return "Invalid exercise", 404
+
+    exercises = load_practice_exercises(day)
+
+    if not exercises or exercise_id > len(exercises):
+        return "Exercise not found", 404
+
+    exercise = exercises[exercise_id - 1]
+    progress = get_user_progress()
+
+    return render_template('practice.html',
+                         day=day,
+                         exercise=exercise,
                          progress=progress)
 
 @app.route('/exam/<int:day>')

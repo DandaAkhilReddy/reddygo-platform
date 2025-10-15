@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Practice Exercise {{ exercise.id }} - Day {{ day }}{% endblock %}
+
+{% block extra_head %}
+<!-- Skulpt - Python in Browser -->
+<script src="https://cdn.jsdelivr.net/gh/skulpt/skulpt-dist@1.2.0/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/skulpt/skulpt-dist@1.2.0/skulpt-stdlib.js"></script>
+
+<style>
+    .code-editor {
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        background-color: #1e293b;
+        color: #e2e8f0;
+        min-height: 300px;
+        resize: vertical;
+    }
+
+    .output-box {
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        background-color: #0f172a;
+        color: #10b981;
+        padding: 16px;
+        border-radius: 8px;
+        min-height: 150px;
+        white-space: pre-wrap;
+        overflow-y: auto;
+    }
+
+    .hint-box {
+        background-color: #fef3c7;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .solution-box {
+        background-color: #dcfce7;
+        border-left: 4px solid #10b981;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl shadow-xl p-6 text-white mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-sm font-semibold mb-1">Day {{ day }} - Exercise {{ exercise.id }}/10</div>
+                <h1 class="text-3xl font-bold">{{ exercise.title }}</h1>
+                <p class="mt-2 text-gray-100">{{ exercise.description }}</p>
+            </div>
+            <div class="text-right">
+                <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm font-semibold">
+                    {{ exercise.difficulty }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column: Instructions -->
+        <div class="lg:col-span-1">
+            <!-- Instructions Card -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">📋 Instructions</h2>
+                <div class="text-gray-700 whitespace-pre-wrap">{{ exercise.instructions }}</div>
+            </div>
+
+            <!-- Hints Card -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">💡 Hints</h2>
+                <div id="hints-container">
+                    {% for hint in exercise.hints %}
+                    <div class="hint-box p-4 rounded-lg mb-3 hidden" id="hint-{{ loop.index0 }}">
+                        <p class="text-sm text-gray-700">{{ hint }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button onclick="showNextHint()" id="hint-btn"
+                        class="w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition">
+                    Show Hint ({{ exercise.hints|length }} available)
+                </button>
+            </div>
+
+            <!-- Expected Output -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">✅ Expected Output</h2>
+                <pre class="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">{{ exercise.expected_output }}</pre>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex space-x-3">
+                {% if exercise.id > 1 %}
+                <a href="/practice/{{ day }}/{{ exercise.id - 1 }}"
+                   class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-center rounded-lg transition">
+                    ← Previous
+                </a>
+                {% endif %}
+                {% if exercise.id < 10 %}
+                <a href="/practice/{{ day }}/{{ exercise.id + 1 }}"
+                   class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-center rounded-lg transition">
+                    Next →
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Code Editor -->
+        <div class="lg:col-span-2">
+            <!-- Code Editor Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">💻 Code Editor</h2>
+                    <div class="flex space-x-2">
+                        <button onclick="resetCode()"
+                                class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition">
+                            Reset
+                        </button>
+                        <button onclick="runCode()"
+                                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition">
+                            ▶ Run Code
+                        </button>
+                    </div>
+                </div>
+
+                <textarea id="code-editor" class="code-editor w-full" spellcheck="false">{{ exercise.starter_code }}</textarea>
+            </div>
+
+            <!-- Output Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">📤 Output</h2>
+                <div id="output" class="output-box"></div>
+            </div>
+
+            <!-- Solution Card (Hidden Initially) -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6" id="solution-card" style="display: none;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">✨ Solution</h2>
+                    <button onclick="copySolution()"
+                            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
+                        Copy
+                    </button>
+                </div>
+                <div class="solution-box p-4 rounded-lg mb-4">
+                    <p class="text-sm text-green-800 font-semibold mb-2">Explanation:</p>
+                    <p class="text-sm text-gray-700">{{ exercise.explanation }}</p>
+                </div>
+                <textarea id="solution-code" class="code-editor w-full" readonly>{{ exercise.solution }}</textarea>
+            </div>
+
+            <button onclick="showSolution()" id="show-solution-btn"
+                    class="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition">
+                Show Solution
+            </button>
+
+            <!-- Back to Lesson -->
+            <div class="text-center mt-6">
+                <a href="/day/{{ day }}" class="text-purple-600 hover:text-purple-700 font-semibold">
+                    ← Back to Day {{ day }} Lesson
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Python code execution using Skulpt
+function outf(text) {
+    const output = document.getElementById("output");
+    output.textContent += text;
+}
+
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+        throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+}
+
+function runCode() {
+    const code = document.getElementById("code-editor").value;
+    const output = document.getElementById("output");
+    output.textContent = "Running...\n";
+
+    Sk.pre = "output";
+    Sk.configure({
+        output: outf,
+        read: builtinRead,
+        __future__: Sk.python3
+    });
+
+    const myPromise = Sk.misceval.asyncToPromise(function() {
+        return Sk.importMainWithBody("<stdin>", false, code, true);
+    });
+
+    myPromise.then(function(mod) {
+        output.textContent = output.textContent.replace("Running...\n", "");
+        if (output.textContent === "") {
+            output.textContent = "✅ Code executed successfully (no output)";
+        }
+    }, function(err) {
+        output.textContent = "❌ Error:\n" + err.toString();
+    });
+}
+
+const starterCode = `{{ exercise.starter_code|safe }}`;
+
+function resetCode() {
+    document.getElementById("code-editor").value = starterCode;
+    document.getElementById("output").textContent = "";
+}
+
+let currentHint = 0;
+const totalHints = {{ exercise.hints|length }};
+
+function showNextHint() {
+    if (currentHint < totalHints) {
+        document.getElementById(`hint-${currentHint}`).classList.remove('hidden');
+        currentHint++;
+
+        if (currentHint >= totalHints) {
+            document.getElementById('hint-btn').disabled = true;
+            document.getElementById('hint-btn').textContent = 'All hints shown';
+            document.getElementById('hint-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            document.getElementById('hint-btn').textContent = `Show Next Hint (${totalHints - currentHint} remaining)`;
+        }
+    }
+}
+
+let solutionShown = false;
+
+function showSolution() {
+    if (!solutionShown) {
+        if (confirm("Are you sure? It's better to try solving it yourself first!")) {
+            document.getElementById('solution-card').style.display = 'block';
+            document.getElementById('show-solution-btn').style.display = 'none';
+            solutionShown = true;
+        }
+    }
+}
+
+function copySolution() {
+    const solution = document.getElementById('solution-code').value;
+    navigator.clipboard.writeText(solution);
+    alert('Solution copied to clipboard!');
+}
+
+// Keyboard shortcuts
+document.getElementById('code-editor').addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Enter to run code
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+    }
+
+    // Tab key to insert 4 spaces
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
+    }
+});
+</script>
+{% endblock %}

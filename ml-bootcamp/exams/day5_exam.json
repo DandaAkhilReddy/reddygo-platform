@@ -1,0 +1,120 @@
+{
+  "title": "Deep Learning with PyTorch - Part 1",
+  "day": 5,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "What is a PyTorch tensor?",
+      "options": [
+        "A type of neural network",
+        "A multi-dimensional array similar to NumPy arrays but with GPU support",
+        "A loss function",
+        "A training algorithm"
+      ],
+      "correct_answer": 1,
+      "explanation": "Tensors are PyTorch's fundamental data structure - multi-dimensional arrays that can run on GPUs."
+    },
+    {
+      "question": "What does 'autograd' do in PyTorch?",
+      "options": [
+        "Automatically tunes hyperparameters",
+        "Automatically computes gradients for backpropagation",
+        "Automatically saves models",
+        "Automatically loads data"
+      ],
+      "correct_answer": 1,
+      "explanation": "Autograd automatically tracks operations on tensors and computes gradients, essential for training neural networks."
+    },
+    {
+      "question": "Which activation function is most commonly used in hidden layers?",
+      "code": "import torch.nn as nn",
+      "options": [
+        "Sigmoid",
+        "ReLU (Rectified Linear Unit)",
+        "Linear",
+        "Softmax"
+      ],
+      "correct_answer": 1,
+      "explanation": "ReLU (max(0, x)) is widely used in hidden layers due to its simplicity and effectiveness in avoiding vanishing gradients."
+    },
+    {
+      "question": "What is the purpose of nn.Linear(784, 128)?",
+      "options": [
+        "Creates a linear activation function",
+        "Creates a fully connected layer with 784 inputs and 128 outputs",
+        "Normalizes data between 784 and 128",
+        "Creates 784 layers"
+      ],
+      "correct_answer": 1,
+      "explanation": "nn.Linear creates a fully connected (dense) layer with specified input and output dimensions."
+    },
+    {
+      "question": "What loss function is used for binary classification?",
+      "options": [
+        "MSELoss",
+        "BCELoss (Binary Cross Entropy)",
+        "NLLLoss",
+        "L1Loss"
+      ],
+      "correct_answer": 1,
+      "explanation": "Binary Cross Entropy (BCELoss) is the standard loss for binary classification problems."
+    },
+    {
+      "question": "What does optimizer.zero_grad() do?",
+      "options": [
+        "Sets all weights to zero",
+        "Resets gradients to zero before backpropagation",
+        "Stops training",
+        "Initializes the optimizer"
+      ],
+      "correct_answer": 1,
+      "explanation": "Gradients accumulate by default in PyTorch. zero_grad() clears them before computing new gradients."
+    },
+    {
+      "question": "What is the purpose of loss.backward()?",
+      "options": [
+        "Moves backward through the dataset",
+        "Computes gradients via backpropagation",
+        "Reverses the loss calculation",
+        "Undoes the last optimization step"
+      ],
+      "correct_answer": 1,
+      "explanation": "backward() performs backpropagation, computing gradients of the loss with respect to all parameters."
+    },
+    {
+      "question": "What does optimizer.step() do?",
+      "options": [
+        "Computes the loss",
+        "Updates model parameters using computed gradients",
+        "Moves to the next batch",
+        "Saves the model"
+      ],
+      "correct_answer": 1,
+      "explanation": "step() updates parameters based on gradients, implementing the optimization algorithm (SGD, Adam, etc.)."
+    },
+    {
+      "question": "How do you move a tensor to GPU?",
+      "code": "tensor = torch.tensor([1, 2, 3])",
+      "options": [
+        "tensor.gpu()",
+        "tensor.to('cuda')",
+        "tensor.cuda_move()",
+        "torch.gpu(tensor)"
+      ],
+      "correct_answer": 1,
+      "explanation": "tensor.to('cuda') or tensor.cuda() moves a tensor to GPU. Check availability with torch.cuda.is_available()."
+    },
+    {
+      "question": "What is the standard training loop order in PyTorch?",
+      "options": [
+        "Forward → Backward → Zero grad → Step",
+        "Zero grad → Forward → Backward → Step",
+        "Backward → Forward → Step → Zero grad",
+        "Step → Zero grad → Forward → Backward"
+      ],
+      "correct_answer": 1,
+      "explanation": "Standard order: 1) zero_grad() to clear gradients, 2) forward pass, 3) backward() for gradients, 4) step() to update weights."
+    }
+  ]
+}

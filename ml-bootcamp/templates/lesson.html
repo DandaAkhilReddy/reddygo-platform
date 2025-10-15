@@ -144,21 +144,37 @@ df = df[df['distance'] > 0]  # Filter data</code></pre>
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Practice Exercises</h2>
             <p class="text-gray-600 mb-6">Complete these 10 exercises to master today's concepts:</p>
 
+            {% if exercises and exercises|length > 0 %}
             <div class="space-y-4">
-                {% for i in range(1, 11) %}
-                <div class="p-6 bg-gray-50 rounded-lg hover:shadow-md transition">
+                {% for exercise in exercises %}
+                <div class="p-6 bg-gray-50 rounded-lg hover:shadow-md transition border-l-4 border-purple-500">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="font-bold text-lg text-gray-800">Exercise {{ i }}</h3>
-                            <p class="text-gray-600 text-sm mt-1">Practice problem {{ i }} for Day {{ day }}</p>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="font-bold text-lg text-gray-800">Exercise {{ exercise.id }}: {{ exercise.title }}</h3>
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if exercise.difficulty == 'Easy' %}bg-green-100 text-green-700
+                                    {% elif exercise.difficulty == 'Medium' %}bg-yellow-100 text-yellow-700
+                                    {% else %}bg-red-100 text-red-700
+                                    {% endif %}">
+                                    {{ exercise.difficulty }}
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm">{{ exercise.description }}</p>
                         </div>
-                        <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition">
-                            Start
-                        </button>
+                        <a href="/practice/{{ day }}/{{ exercise.id }}"
+                           class="ml-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition whitespace-nowrap">
+                            Start →
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            {% else %}
+            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p class="text-yellow-800">Practice exercises for Day {{ day }} are coming soon!</p>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Project Tab -->

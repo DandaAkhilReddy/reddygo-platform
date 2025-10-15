@@ -1,0 +1,119 @@
+{
+  "title": "Advanced ML Algorithms",
+  "day": 4,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "How do Decision Trees make predictions?",
+      "options": [
+        "By averaging all training samples",
+        "By following a series of if-then-else rules based on features",
+        "By finding nearest neighbors",
+        "By solving a linear equation"
+      ],
+      "correct_answer": 1,
+      "explanation": "Decision Trees split data recursively based on feature thresholds, creating a tree of decision rules."
+    },
+    {
+      "question": "What is the main advantage of Random Forests over a single Decision Tree?",
+      "options": [
+        "Random Forests are faster",
+        "Random Forests reduce overfitting by averaging multiple trees",
+        "Random Forests use less memory",
+        "Random Forests only work on numerical data"
+      ],
+      "correct_answer": 1,
+      "explanation": "Random Forests build many trees on random subsets of data/features and average predictions, reducing variance and overfitting."
+    },
+    {
+      "question": "What does 'boosting' do in ensemble methods like XGBoost?",
+      "options": [
+        "Trains all models in parallel",
+        "Sequentially trains models, each correcting previous model's errors",
+        "Randomly samples data",
+        "Removes outliers"
+      ],
+      "correct_answer": 1,
+      "explanation": "Boosting trains models sequentially, with each new model focusing on examples the previous models got wrong."
+    },
+    {
+      "question": "What is 'feature importance' in tree-based models?",
+      "options": [
+        "The correlation between features",
+        "A measure of how much each feature contributes to predictions",
+        "The number of times a feature appears",
+        "The mean value of a feature"
+      ],
+      "correct_answer": 1,
+      "explanation": "Feature importance measures how useful each feature is for making predictions, based on splits in the tree."
+    },
+    {
+      "question": "What is Grid Search used for?",
+      "options": [
+        "Searching for missing data",
+        "Systematically trying combinations of hyperparameters to find the best",
+        "Creating a grid of predictions",
+        "Visualizing decision boundaries"
+      ],
+      "correct_answer": 1,
+      "explanation": "Grid Search exhaustively searches through specified hyperparameter combinations to find the optimal set."
+    },
+    {
+      "question": "What is the difference between bagging and boosting?",
+      "options": [
+        "Bagging trains sequentially, boosting in parallel",
+        "Bagging trains in parallel with random samples, boosting sequentially to correct errors",
+        "They are the same thing",
+        "Bagging only works for classification"
+      ],
+      "correct_answer": 1,
+      "explanation": "Bagging (Bootstrap Aggregating) trains models independently on random samples. Boosting trains sequentially, correcting errors."
+    },
+    {
+      "question": "What is 'max_depth' in a Decision Tree?",
+      "options": [
+        "Maximum number of features",
+        "Maximum number of levels in the tree",
+        "Maximum number of samples",
+        "Maximum training time"
+      ],
+      "correct_answer": 1,
+      "explanation": "max_depth limits how deep the tree can grow. Deeper trees can overfit, shallow trees may underfit."
+    },
+    {
+      "question": "Why might you use XGBoost instead of a standard Random Forest?",
+      "code": "# For a Kaggle competition",
+      "options": [
+        "XGBoost is always simpler",
+        "XGBoost often achieves better performance through gradient boosting",
+        "Random Forest can't handle categorical data",
+        "XGBoost requires less data"
+      ],
+      "correct_answer": 1,
+      "explanation": "XGBoost's gradient boosting approach often outperforms Random Forests, especially with proper tuning."
+    },
+    {
+      "question": "What does 'n_estimators' mean in Random Forest?",
+      "options": [
+        "Number of features to consider",
+        "Number of trees in the forest",
+        "Number of data points",
+        "Number of splits per tree"
+      ],
+      "correct_answer": 1,
+      "explanation": "n_estimators specifies how many individual decision trees to train. More trees generally improve performance up to a point."
+    },
+    {
+      "question": "What is model stacking?",
+      "options": [
+        "Training models one after another",
+        "Combining predictions from multiple models using another model",
+        "Saving models to disk",
+        "Removing underperforming models"
+      ],
+      "correct_answer": 1,
+      "explanation": "Stacking trains a meta-model to combine predictions from multiple base models, often improving overall performance."
+    }
+  ]
+}

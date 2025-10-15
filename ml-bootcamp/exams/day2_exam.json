@@ -1,0 +1,120 @@
+{
+  "title": "Pandas & Data Preprocessing",
+  "day": 2,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "Which Pandas function is used to load a CSV file into a DataFrame?",
+      "options": [
+        "pd.load_csv('file.csv')",
+        "pd.read_csv('file.csv')",
+        "pd.import_csv('file.csv')",
+        "pd.csv_read('file.csv')"
+      ],
+      "correct_answer": 1,
+      "explanation": "pd.read_csv() is the standard function to read CSV files into a Pandas DataFrame."
+    },
+    {
+      "question": "What does df.head() display by default?",
+      "code": "import pandas as pd\ndf = pd.read_csv('data.csv')\nprint(df.head())",
+      "options": [
+        "The last 5 rows",
+        "The first 5 rows",
+        "All rows",
+        "The first 10 rows"
+      ],
+      "correct_answer": 1,
+      "explanation": "df.head() displays the first 5 rows by default. You can specify a number like df.head(10) for more rows."
+    },
+    {
+      "question": "How do you select a single column 'age' from a DataFrame df?",
+      "options": [
+        "df.get('age')",
+        "df['age']",
+        "df.select('age')",
+        "df.column('age')"
+      ],
+      "correct_answer": 1,
+      "explanation": "Use square brackets with column name: df['age']. You can also use df.age but bracket notation is preferred."
+    },
+    {
+      "question": "Which method removes rows with missing values?",
+      "options": [
+        "df.remove_na()",
+        "df.dropna()",
+        "df.delete_missing()",
+        "df.clean()"
+      ],
+      "correct_answer": 1,
+      "explanation": "df.dropna() removes all rows containing any missing (NaN) values."
+    },
+    {
+      "question": "What does df.groupby('category').mean() do?",
+      "options": [
+        "Calculates mean of all columns",
+        "Groups by category and calculates mean for each group",
+        "Sorts by category then calculates mean",
+        "Filters rows where category equals mean"
+      ],
+      "correct_answer": 1,
+      "explanation": "groupby() groups data by specified column(s), then aggregation functions like mean() are applied to each group."
+    },
+    {
+      "question": "How do you rename a column 'old_name' to 'new_name'?",
+      "options": [
+        "df.rename({'old_name': 'new_name'})",
+        "df.rename(columns={'old_name': 'new_name'})",
+        "df.change_column('old_name', 'new_name')",
+        "df.columns.rename('old_name', 'new_name')"
+      ],
+      "correct_answer": 1,
+      "explanation": "df.rename(columns={'old_name': 'new_name'}) is the correct syntax to rename columns."
+    },
+    {
+      "question": "What does df.describe() return?",
+      "options": [
+        "Column names and types",
+        "Statistical summary of numerical columns",
+        "First and last rows",
+        "Missing value counts"
+      ],
+      "correct_answer": 1,
+      "explanation": "df.describe() returns statistical summary (count, mean, std, min, quartiles, max) for numerical columns."
+    },
+    {
+      "question": "How do you filter rows where age > 18?",
+      "code": "df = pd.DataFrame({'age': [15, 20, 17, 25, 30]})",
+      "options": [
+        "df.filter(age > 18)",
+        "df[df['age'] > 18]",
+        "df.where('age > 18')",
+        "df.select(age > 18)"
+      ],
+      "correct_answer": 1,
+      "explanation": "Use boolean indexing: df[df['age'] > 18] creates a boolean mask and filters the DataFrame."
+    },
+    {
+      "question": "What is the purpose of pd.get_dummies()?",
+      "options": [
+        "Remove duplicate rows",
+        "Convert categorical variables to numerical (one-hot encoding)",
+        "Create sample data",
+        "Fill missing values with dummy values"
+      ],
+      "correct_answer": 1,
+      "explanation": "pd.get_dummies() performs one-hot encoding, converting categorical variables into binary columns."
+    },
+    {
+      "question": "How do you merge two DataFrames df1 and df2 on a common column 'id'?",
+      "options": [
+        "df1.join(df2, on='id')",
+        "pd.merge(df1, df2, on='id')",
+        "df1.combine(df2, 'id')",
+        "pd.concat([df1, df2], on='id')"
+      ],
+      "correct_answer": 1,
+      "explanation": "pd.merge(df1, df2, on='id') performs SQL-like joins on specified column(s)."
+    }
+  ]
+}

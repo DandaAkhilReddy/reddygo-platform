@@ -1,0 +1,119 @@
+{
+  "title": "Machine Learning Foundations",
+  "day": 3,
+  "total_questions": 10,
+  "passing_score": 70,
+  "questions": [
+    {
+      "question": "What is the main difference between supervised and unsupervised learning?",
+      "options": [
+        "Supervised learning is faster",
+        "Supervised learning uses labeled data, unsupervised doesn't",
+        "Unsupervised learning is more accurate",
+        "They are the same thing"
+      ],
+      "correct_answer": 1,
+      "explanation": "Supervised learning uses labeled training data (input-output pairs), while unsupervised learning finds patterns in unlabeled data."
+    },
+    {
+      "question": "Why do we split data into training and test sets?",
+      "options": [
+        "To make training faster",
+        "To save memory",
+        "To evaluate model performance on unseen data",
+        "To increase accuracy"
+      ],
+      "correct_answer": 2,
+      "explanation": "Test set evaluates how well the model generalizes to new, unseen data, preventing overfitting to training data."
+    },
+    {
+      "question": "What does overfitting mean?",
+      "options": [
+        "Model is too simple",
+        "Model performs well on training data but poorly on test data",
+        "Model trains too quickly",
+        "Model has too few parameters"
+      ],
+      "correct_answer": 1,
+      "explanation": "Overfitting occurs when a model learns training data too well, including noise, leading to poor generalization."
+    },
+    {
+      "question": "Which metric is best for imbalanced classification (99% class A, 1% class B)?",
+      "options": [
+        "Accuracy",
+        "F1-score or Precision-Recall",
+        "Mean Squared Error",
+        "R-squared"
+      ],
+      "correct_answer": 1,
+      "explanation": "F1-score, Precision, and Recall are better for imbalanced data. Accuracy can be misleading (99% accuracy by always predicting class A)."
+    },
+    {
+      "question": "What is the purpose of cross-validation?",
+      "options": [
+        "To clean data",
+        "To get more robust performance estimates by testing on multiple data splits",
+        "To increase model accuracy",
+        "To reduce training time"
+      ],
+      "correct_answer": 1,
+      "explanation": "Cross-validation splits data into k folds, trains on k-1 and tests on 1, rotating through all folds for robust evaluation."
+    },
+    {
+      "question": "In k-NN, what does increasing 'k' generally do?",
+      "options": [
+        "Makes decision boundary more complex",
+        "Makes decision boundary smoother (less complex)",
+        "Doesn't affect the model",
+        "Always improves accuracy"
+      ],
+      "correct_answer": 1,
+      "explanation": "Higher k considers more neighbors, creating smoother decision boundaries and reducing overfitting."
+    },
+    {
+      "question": "What does the confusion matrix show?",
+      "options": [
+        "Training progress over time",
+        "True Positives, False Positives, True Negatives, False Negatives",
+        "Feature importance",
+        "Learning rate optimization"
+      ],
+      "correct_answer": 1,
+      "explanation": "Confusion matrix shows counts of TP, FP, TN, FN - the foundation for calculating precision, recall, and F1-score."
+    },
+    {
+      "question": "Which is a regression algorithm?",
+      "code": "# Predicting house prices from features",
+      "options": [
+        "Logistic Regression",
+        "Linear Regression",
+        "K-Means",
+        "Decision Tree Classifier"
+      ],
+      "correct_answer": 1,
+      "explanation": "Linear Regression predicts continuous values (like prices). Despite its name, Logistic Regression is for classification."
+    },
+    {
+      "question": "What is feature scaling and why is it important?",
+      "options": [
+        "Removing features; improves speed",
+        "Normalizing features to similar ranges; improves gradient descent and distance-based algorithms",
+        "Adding more features; improves accuracy",
+        "Scaling features doesn't matter"
+      ],
+      "correct_answer": 1,
+      "explanation": "Feature scaling (normalization/standardization) puts features on similar scales, critical for algorithms sensitive to feature magnitude."
+    },
+    {
+      "question": "What is the bias-variance tradeoff?",
+      "options": [
+        "Trade between model speed and accuracy",
+        "Trade between underfitting (high bias) and overfitting (high variance)",
+        "Trade between training and test set size",
+        "Trade between number of features and samples"
+      ],
+      "correct_answer": 1,
+      "explanation": "Simple models have high bias (underfit), complex models have high variance (overfit). Balance is key for good generalization."
+    }
+  ]
+}

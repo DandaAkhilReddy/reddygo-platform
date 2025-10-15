@@ -7,9 +7,19 @@ from flask import Flask, render_template, request, jsonify, session
 from datetime import datetime
 import json
 import os
+from models import db, User, Progress, ExamResult
 
 app = Flask(__name__)
 app.secret_key = 'reddygo-ml-bootcamp-2025'
+
+# Database configuration
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'instance', 'bootcamp.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database
+db.init_app(app)
 
 # Load exam data
 def load_exam(day):
@@ -20,22 +30,63 @@ def load_exam(day):
             return json.load(f)
     return None
 
-# Load user progress
-def get_user_progress():
-    """Get current user's progress"""
-    if 'progress' not in session:
-        session['progress'] = {
-            'completed_days': [],
-            'exam_scores': {},
-            'current_day': 1,
-            'total_score': 0
-        }
-    return session['progress']
+# Get or create default user
+def get_current_user():
+    """Get the current user (default_user for now, can add auth later)"""
+    user = User.query.filter_by(username='default_user').first()
+    if not user:
+        user = User(username='default_user')
+        db.session.add(user)
+        db.session.commit()
+    return user
 
-def save_user_progress(progress):
-    """Save user progress to session"""
-    session['progress'] = progress
-    session.modified = True
+# Load user progress from database
+def get_user_progress():
+    """Get current user's progress from database"""
+    user = get_current_user()
+    progress_record = Progress.query.filter_by(user_id=user.id).first()
+
+    if not progress_record:
+        # Create new progress record
+        progress_record = Progress(user_id=user.id, current_day=1, completed_days='[]')
+        db.session.add(progress_record)
+        db.session.commit()
+
+    # Get all exam results for this user
+    exam_results = ExamResult.query.filter_by(user_id=user.id).order_by(ExamResult.day).all()
+
+    # Build exam_scores dictionary
+    exam_scores = {}
+    for result in exam_results:
+        exam_scores[f'day{result.day}'] = {
+            'score': result.score,
+            'correct': result.correct,
+            'total': result.total,
+            'passed': result.passed,
+            'timestamp': result.timestamp.isoformat()
+        }
+
+    return {
+        'completed_days': progress_record.get_completed_days(),
+        'exam_scores': exam_scores,
+        'current_day': progress_record.current_day,
+        'total_score': progress_record.total_score
+    }
+
+def save_user_progress(progress_data):
+    """Save user progress to database"""
+    user = get_current_user()
+    progress_record = Progress.query.filter_by(user_id=user.id).first()
+
+    if not progress_record:
+        progress_record = Progress(user_id=user.id)
+        db.session.add(progress_record)
+
+    progress_record.current_day = progress_data.get('current_day', 1)
+    progress_record.set_completed_days(progress_data.get('completed_days', []))
+    progress_record.total_score = progress_data.get('total_score', 0.0)
+
+    db.session.commit()
 
 @app.route('/')
 def index():
@@ -190,22 +241,42 @@ def submit_exam(day):
     score = (correct_count / total_questions) * 100
     passed = score >= 70
 
-    # Update progress
-    progress = get_user_progress()
-    progress['exam_scores'][f'day{day}'] = {
-        'score': score,
-        'correct': correct_count,
-        'total': total_questions,
-        'passed': passed,
-        'timestamp': datetime.now().isoformat()
-    }
+    # Save exam result to database
+    user = get_current_user()
 
+    # Check if exam result already exists for this day
+    existing_result = ExamResult.query.filter_by(user_id=user.id, day=day).first()
+
+    if existing_result:
+        # Update existing result
+        existing_result.score = score
+        existing_result.correct = correct_count
+        existing_result.total = total_questions
+        existing_result.passed = passed
+        existing_result.set_answers(answers)
+        existing_result.timestamp = datetime.utcnow()
+    else:
+        # Create new exam result
+        exam_result = ExamResult(
+            user_id=user.id,
+            day=day,
+            score=score,
+            correct=correct_count,
+            total=total_questions,
+            passed=passed
+        )
+        exam_result.set_answers(answers)
+        db.session.add(exam_result)
+
+    db.session.commit()
+
+    # Update progress if passed
+    progress = get_user_progress()
     if passed and day not in progress['completed_days']:
         progress['completed_days'].append(day)
         if day < 10:
             progress['current_day'] = day + 1
-
-    save_user_progress(progress)
+        save_user_progress(progress)
 
     return jsonify({
         'score': score,
@@ -274,6 +345,19 @@ def certificate():
 @app.route('/reset_progress', methods=['POST'])
 def reset_progress():
     """Reset all progress (for testing)"""
+    user = get_current_user()
+
+    # Delete all exam results
+    ExamResult.query.filter_by(user_id=user.id).delete()
+
+    # Reset progress
+    progress_record = Progress.query.filter_by(user_id=user.id).first()
+    if progress_record:
+        progress_record.current_day = 1
+        progress_record.set_completed_days([])
+        progress_record.total_score = 0.0
+
+    db.session.commit()
     session.clear()
     return jsonify({'success': True})
 

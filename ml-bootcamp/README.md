@@ -21,15 +21,39 @@ cd ml-bootcamp
 pip install -r requirements.txt
 ```
 
-### 2. Run the Platform
+### 2. Initialize Database
+
+**IMPORTANT:** Run this once to create the database:
+
+```bash
+python init_db.py
+```
+
+This creates:
+- SQLite database at `instance/bootcamp.db`
+- Default user account
+- Progress tracking tables
+
+### 3. Run the Platform
 
 ```bash
 python app.py
 ```
 
-### 3. Open in Browser
+### 4. Open in Browser
 
 Navigate to: http://localhost:5000
+
+## ✅ Progress Saves Permanently!
+
+Your learning progress is now saved to a **SQLite database**, which means:
+
+✅ **Progress persists** even after closing the browser
+✅ **Exam scores are saved** permanently to disk
+✅ **Can continue learning** anytime - just reopen the browser
+✅ **Progress survives** cookie clearing and browser restarts
+
+**No more lost progress!** The database file (`instance/bootcamp.db`) stores all your data.
 
 ## Platform Structure
 
@@ -164,17 +188,40 @@ Create `lessons/dayX.md` with markdown content.
 
 - **Backend:** Flask (Python)
 - **Frontend:** TailwindCSS
-- **Data:** JSON files
-- **Session:** Flask sessions
+- **Database:** SQLite + SQLAlchemy (persistent storage)
+- **Data:** JSON files (for exams)
+
+## Database Schema
+
+### Tables
+
+**users** - User accounts
+- id, username, email, created_at
+
+**progress** - Learning progress
+- id, user_id, current_day, completed_days, total_score, updated_at
+
+**exam_results** - Exam scores
+- id, user_id, day, score, correct, total, passed, answers, timestamp
+
+### Reset Progress
+
+To reset your progress for testing:
+
+```bash
+python init_db.py  # This drops and recreates all tables
+```
+
+Or use the `/reset_progress` API endpoint (for development).
 
 ## Next Steps
 
-1. ✅ Basic platform complete
+1. ✅ Basic platform with persistent database complete!
 2. Add remaining exam JSON files (Days 2-10)
 3. Add detailed lesson content
 4. Implement PDF certificate generation
-5. Add user authentication (optional)
-6. Deploy to production
+5. Add user authentication system (login/register)
+6. Deploy to production (with PostgreSQL for multi-user)
 
 ## License
 
